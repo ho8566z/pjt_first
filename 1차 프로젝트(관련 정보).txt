@@ -1,0 +1,4 @@
+1차 프로젝트: 06.25~ (4주간 진행)
+    (AIoT 드론 다중 객체 감지 시스템)
+    (언어: python(+ HTML, CSS, Javascript ->웹 응용프로그램의 기초))
+    (모듈: OpenCV, YOLO, Flask 등)
