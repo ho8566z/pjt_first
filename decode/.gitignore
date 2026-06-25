@@ -1,0 +1,4 @@
+**/__pycache__/
+**/venv/
+**/static/registered_faces/
+**/yolov8n.pt
