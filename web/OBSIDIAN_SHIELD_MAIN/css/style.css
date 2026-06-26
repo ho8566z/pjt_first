@@ -1,0 +1,422 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, "Noto Sans KR", sans-serif;
+    color: #07192e;
+    background: #f4f7fb;
+    overflow-x: hidden;
+}
+
+.header {
+    height: 92px;
+    background: linear-gradient(90deg, #061426, #071d36 55%, #04101f);
+    display: flex;
+    align-items: center;
+    padding: 0 44px;
+    color: white;
+    box-shadow: 0 8px 28px rgba(4, 18, 34, 0.22);
+    position: relative;
+    z-index: 10;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo {
+    width: 58px;
+    height: 58px;
+    border: 2px solid rgba(255,255,255,.9);
+    clip-path: polygon(50% 0%, 90% 15%, 83% 78%, 50% 100%, 17% 78%, 10% 15%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transform: rotate(45deg);
+}
+
+.brand h1 {
+    font-size: 30px;
+    letter-spacing: 1px;
+    font-weight: 800;
+}
+
+.brand p {
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    opacity: .9;
+}
+
+.main {
+    min-height: calc(100vh - 140px);
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 55% 40%, rgba(255,255,255,.95), rgba(248,251,255,.86) 43%, rgba(238,243,249,.78) 72%),
+        linear-gradient(120deg, #ffffff, #eef3f9);
+}
+
+.main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(110deg, transparent 0%, transparent 58%, rgba(7,25,46,.04) 58.1%, transparent 58.3%),
+        linear-gradient(60deg, transparent 0%, transparent 66%, rgba(7,25,46,.045) 66.1%, transparent 66.3%);
+    opacity: .75;
+}
+
+.radar {
+    position: absolute;
+    border: 1px solid rgba(7, 25, 46, .08);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.radar::before,
+.radar::after {
+    content: "";
+    position: absolute;
+    inset: 14%;
+    border: 1px solid rgba(7, 25, 46, .07);
+    border-radius: 50%;
+}
+
+.radar::after {
+    inset: 30%;
+}
+
+.radar-1 {
+    width: 780px;
+    height: 780px;
+    left: 130px;
+    top: 10px;
+}
+
+.radar-2 {
+    width: 940px;
+    height: 940px;
+    right: -120px;
+    top: -100px;
+}
+
+.hero {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 28% 42% 30%;
+    min-height: calc(100vh - 140px);
+}
+
+.visual-left {
+    position: relative;
+}
+
+.cctv {
+    position: absolute;
+    width: 230px;
+    height: 115px;
+    left: 28px;
+    top: 340px;
+    background: linear-gradient(145deg, #f7f8fa, #b9c0c9);
+    border-radius: 12px 34px 34px 12px;
+    box-shadow: 0 20px 35px rgba(8, 25, 46, .22);
+    transform: rotate(18deg);
+}
+
+.cctv::before {
+    content: "";
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    right: 16px;
+    top: 30px;
+    background: radial-gradient(circle, #020915 0 30%, #42505f 31% 48%, #101b2a 49% 100%);
+    border-radius: 50%;
+}
+
+.cctv::after {
+    content: "";
+    position: absolute;
+    width: 70px;
+    height: 18px;
+    left: 35px;
+    bottom: -38px;
+    background: #a6adb7;
+    border-radius: 8px;
+    transform: rotate(-60deg);
+}
+
+.city {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 280px;
+    opacity: .38;
+    background:
+        linear-gradient(to top, rgba(7,25,46,.45), transparent 75%),
+        repeating-linear-gradient(to right,
+            transparent 0 24px,
+            rgba(7,25,46,.18) 25px 28px,
+            transparent 29px 55px);
+    mask-image: linear-gradient(to top, black 60%, transparent 100%);
+}
+
+.city::before {
+    content: "";
+    position: absolute;
+    bottom: 35px;
+    left: 18%;
+    width: 42px;
+    height: 210px;
+    background: #33445a;
+    box-shadow:
+        70px 35px 0 #2c3d52,
+        130px -20px 0 #405168,
+        210px 45px 0 #3b4c62,
+        275px 10px 0 #2d3f56,
+        350px 58px 0 #415269;
+}
+
+.center-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 60px;
+}
+
+.title-box h2 {
+    font-size: 78px;
+    line-height: .98;
+    letter-spacing: 4px;
+    font-weight: 900;
+    color: #07192e;
+    text-shadow: 0 4px 8px rgba(7,25,46,.14);
+}
+
+.title-box p {
+    margin-top: 24px;
+    font-size: 27px;
+    font-weight: 500;
+}
+
+.login-card {
+    width: 580px;
+    margin-top: 32px;
+    padding: 45px 42px;
+    background: rgba(255,255,255,.88);
+    border: 1px solid rgba(207,216,228,.85);
+    border-radius: 20px;
+    box-shadow: 0 20px 55px rgba(7, 25, 46, .13);
+    backdrop-filter: blur(8px);
+}
+
+.input-box {
+    height: 74px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #d6dee9;
+    border-radius: 11px;
+    background: rgba(255,255,255,.92);
+    padding: 0 28px;
+    margin-bottom: 22px;
+    transition: .25s;
+}
+
+.input-box:hover {
+    border-color: #9fb2cc;
+    box-shadow: 0 8px 20px rgba(7,25,46,.06);
+}
+
+.input-box .icon {
+    font-size: 24px;
+}
+
+.input-box strong {
+    width: 45px;
+    font-size: 23px;
+}
+
+.input-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 20px;
+    color: #07192e;
+}
+
+.input-box input::placeholder {
+    color: #a5afbc;
+}
+
+.login-card button {
+    width: 100%;
+    height: 76px;
+    border: none;
+    border-radius: 11px;
+    margin-top: 16px;
+    background: linear-gradient(90deg, #061426, #08203d);
+    color: white;
+    font-size: 27px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(7,25,46,.18);
+    transition: .25s;
+}
+
+.login-card button:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(90deg, #092447, #0a315e);
+}
+
+.visual-right {
+    position: relative;
+}
+
+.drone {
+    position: absolute;
+    top: 140px;
+    right: 85px;
+    width: 380px;
+    height: 180px;
+    animation: float 3.5s ease-in-out infinite;
+}
+
+.drone .body {
+    position: absolute;
+    width: 160px;
+    height: 70px;
+    left: 110px;
+    top: 55px;
+    border-radius: 45px 45px 28px 28px;
+    background: linear-gradient(145deg, #9099a7, #2e3948);
+    box-shadow: 0 16px 28px rgba(7,25,46,.25);
+}
+
+.body::after {
+    content: "";
+    position: absolute;
+    width: 54px;
+    height: 36px;
+    left: 53px;
+    bottom: -18px;
+    background: radial-gradient(circle, #111a27 0 38%, #566477 40% 70%, #172232 72%);
+    border-radius: 50%;
+}
+
+.arm {
+    position: absolute;
+    height: 8px;
+    width: 320px;
+    left: 28px;
+    top: 88px;
+    background: #202a36;
+}
+
+.arm-1 {
+    transform: rotate(15deg);
+}
+
+.arm-2 {
+    transform: rotate(-15deg);
+}
+
+.prop {
+    position: absolute;
+    width: 110px;
+    height: 24px;
+    background: rgba(20,28,38,.72);
+    border-radius: 50%;
+    filter: blur(2px);
+}
+
+.p1 { left: 0; top: 35px; }
+.p2 { right: 0; top: 35px; }
+.p3 { left: 0; bottom: 25px; }
+.p4 { right: 0; bottom: 25px; }
+
+.feature-list {
+    position: absolute;
+    top: 405px;
+    right: 100px;
+    width: 300px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 42px;
+}
+
+.feature-icon {
+    width: 58px;
+    height: 58px;
+    border: 2px solid rgba(7,25,46,.45);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+}
+
+.feature h3 {
+    font-size: 25px;
+    margin-bottom: 8px;
+}
+
+.feature p {
+    font-size: 19px;
+    color: #1d2f45;
+}
+
+.footer {
+    height: 48px;
+    background: linear-gradient(90deg, #061426, #071d36 55%, #04101f);
+    color: rgba(255,255,255,.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    letter-spacing: .3px;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@media (max-width: 1200px) {
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 70px 30px;
+    }
+
+    .visual-left,
+    .visual-right {
+        display: none;
+    }
+
+    .center-area {
+        align-items: center;
+        text-align: center;
+    }
+
+    .login-card {
+        width: min(580px, 92vw);
+    }
+
+    .title-box h2 {
+        font-size: 58px;
+    }
+}

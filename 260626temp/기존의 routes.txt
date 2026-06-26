@@ -1,0 +1,39 @@
+from flask import Blueprint, render_template, send_file
+from logs.event_logs import event_logs, get_event_list
+import pandas as pd
+import io
+
+event_log_bp = Blueprint(
+    "event_log", __name__, url_prefix="/event_log", template_folder="templates"
+)
+
+@event_log_bp.route("/event_log_list")
+def event_list():
+
+    events = event_logs.get_event_list()
+
+    return render_template(
+        "event_log_list.html",
+        events = events
+    )
+
+@event_log_bp.route("/export_data")
+def export_data():
+
+    events = event_logs.get_event_list()
+
+    data_frame = pd.DataFrame(events)
+
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        data_frame.to_excel(writer, index=False, sheet_name="Event_Logs")
+    output.seek(0)
+
+    return send_file(
+        output, 
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        as_attachment=True,
+        download_name="event_logs.xlsx"
+    )
+
+
