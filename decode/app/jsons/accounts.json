@@ -1,0 +1,13 @@
+{
+    "jungho": {
+        "ID": "jungho",
+        "PW": "asdfasdf!",
+        "EMAIL": "a@gmail.com",
+        "PHONE": "01055200547",
+        "REG_DATE": "2026/06/26, 10:58:00",
+        "MOD_DATE": "2026/06/26, 10:58:00",
+        "IS_APPROVE": false,
+        "PERMISSIONS": [],
+        "SENIOR_ID": "master"
+    }
+}

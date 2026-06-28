@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>계정 관리</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('member.static', filename='css/member_list.css') }}">
+
+</head>
+
+<body>
+    <div id="member_wrap">
+        <!-- 제목 -->
+        <div class="page_title">
+
+        <h1>계정 관리</h1>
+
+        <p>가입된 계정을 조회 및 관리합니다.</p>
+
+        </div>
+
+        <!-- 검색 -->
+        <div class="search_box">
+
+            <input
+                type="text"
+                placeholder="ID 또는 이메일 검색">
+
+            <button>
+
+                검색
+
+            </button>
+
+        </div>
+
+
+        <!-- 필터 -->
+        <div class="filter_box">
+
+            <select>
+
+                <option>권한 전체</option>
+
+                <option>관리자</option>
+
+                <option>관제자</option>
+
+            </select>
+
+            <select>
+
+                <option>소속 전체</option>
+
+            </select>
+
+            <select>
+
+                <option>승인 여부</option>
+
+                <option>승인</option>
+
+                <option>미승인</option>
+
+            </select>
+
+            <select>
+
+                <option>최근 등록순</option>
+
+                <option>오래된 순</option>
+
+            </select>
+
+            <select>
+
+                <option>10개씩 보기</option>
+
+                <option>20개씩 보기</option>
+
+                <option>50개씩 보기</option>
+
+            </select>
+
+        </div>
+
+        <!-- 목록 -->
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th></th>
+
+                <th>ID</th>
+
+                <th>Email</th>
+
+                <th>Phone</th>
+
+                <th>권한</th>
+
+                <th>승인</th>
+
+                <th>등록일</th>
+
+                <th>관리</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for memberId, member in account_db.items() %}
+
+            <tr>
+
+                <td>
+
+                    <input type="checkbox">
+
+                </td>
+
+                <td>
+
+                    {{ member.ID }}
+
+                </td>
+
+                <td>
+
+                    {{ member.EMAIL }}
+
+                </td>
+
+                <td>
+
+                    {{ member.PHONE }}
+
+                </td>
+
+                <td>
+
+                    {{ member.PERMISSIONS|join(', ') }}
+
+                </td>
+
+                <td>
+
+                    {% if member.IS_APPROVE %}
+
+                    승인
+
+                    {% else %}
+
+                    미승인
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    {{ member.REG_DATE }}
+
+                </td>
+
+                <td>
+
+                    <a href="/member/detail/{{ member.ID }}">
+
+                        상세
+
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <!-- 페이지 -->
+
+        <div class="pagination">
+
+            <button>이전</button>
+
+            <button>1</button>
+
+            <button>2</button>
+
+            <button>3</button>
+
+            <button>다음</button>
+
+        </div>
+
+    </div>
+
+<script src="{{ url_for('member.static',filename='js/member_list.js') }}"></script>
+
+</body>
+
+</html>
