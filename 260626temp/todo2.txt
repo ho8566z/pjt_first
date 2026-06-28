@@ -1,3 +1,0 @@
-routes.py에서 함수로 빼서 간결하게 만들기
-
-notepad = git <-- branch 추가하기

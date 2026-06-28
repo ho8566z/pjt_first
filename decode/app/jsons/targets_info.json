@@ -1,0 +1,11 @@
+{
+  "target_id": {
+    "TARGET_ID": "target_id",
+    "NAME": "human01",
+    "AGE": 20,
+    "SHORT_DESCRIPTION": "실종자",
+    "DESCRIPTION": "상세 설명",
+    "REG_DATE": "2026/06/26, 10:58:00",
+    "MOD_DATE": "2026/06/26, 10:58:00"
+  }
+}
