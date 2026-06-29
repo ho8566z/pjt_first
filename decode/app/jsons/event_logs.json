@@ -1,5 +1,6 @@
 {
-  "log_id01": {
+  "log_id01": [
+    {
     "ID": "log_id01",
     "CAMERA_ID": "camera_id",
     "REG_DATE": "2026/06/26, 11:05:00",
@@ -11,5 +12,142 @@
       }
     ],
     "TARGET_ID": "target_id"
-  }
+    },
+    {
+    "ID": "log_id01",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/26, 11:15:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    },
+    {
+    "ID": "log_id01",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/26, 11:30:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    },
+    {
+    "ID": "log_id01",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/27, 11:55:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    }
+  ],
+  "log_id02": [
+    {
+    "ID": "log_id02",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/29, 09:20:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    },
+    {
+    "ID": "log_id02",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/29, 09:21:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    },
+    {
+    "ID": "log_id02",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/29, 09:26:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    }
+  ],
+  "log_id03": [
+    {
+    "ID": "log_id03",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/29, 09:22:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    },
+    {
+    "ID": "log_id03",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/29, 09:30:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    }
+  ],
+  "log_id04": [
+    {
+    "ID": "log_id04",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/29, 09:24:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    },
+    {
+    "ID": "log_id04",
+    "CAMERA_ID": "camera_id",
+    "REG_DATE": "2026/06/29, 09:33:00",
+    "PLACE": [
+      {
+        "latitude": 37.5001,
+        "longitude": 127.0365,
+        "altitude": 25.4
+      }
+    ],
+    "TARGET_ID": "target_id"
+    }
+  ]
 }
