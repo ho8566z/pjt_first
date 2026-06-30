@@ -20,3 +20,17 @@
 
 ==========================================
 json_manager.py <- ACCOUNT_LOGS_FILE 추가하기
+
+==========================================
+==========================================
+
+데이터 구조
+{
+  "user_log_001" : {
+    "EVENT_LOG_ID" : "log_id001",
+    "VIEWER_ID" : "user1",
+    "IS_CHECKED" : false,
+    }
+}
+CHECKED_DATE / REG_DATE의 경우, 
+IS_CHECKED, event-logs.json의 REG_DATE와 겹침

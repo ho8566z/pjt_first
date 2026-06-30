@@ -1,0 +1,12 @@
+app.py
+
+from app.domains.logger.event_logs.routes import event_log_bp
+from app.domains.logger.user_logs.routes import user_log_bp
+
+flask_app.register_blueprint(event_log_bp)
+flask_app.register_blueprint(user_log_bp)
+
+==================================================
+jso_manager.py
+
+USER_LOGS_FILE = os.path.join(BASE_DIR, "jsons", "user_logs.json")
