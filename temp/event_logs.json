@@ -1,0 +1,142 @@
+{
+  "log_id001": {
+    "ID": "log_id001",
+    "REG_DATE": "2026/06/26, 09:05:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id002": {
+    "ID": "log_id002",
+    "REG_DATE": "2026/06/26, 10:05:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id003": {
+    "ID": "log_id003",
+    "REG_DATE": "2026/06/26, 11:22:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id004": {
+    "ID": "log_id004",
+    "REG_DATE": "2026/06/26, 13:53:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id005": {
+    "ID": "log_id005",
+    "REG_DATE": "2026/06/26, 14:08:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id006": {
+    "ID": "log_id006",
+    "REG_DATE": "2026/06/29, 09:00:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id007": {
+    "ID": "log_id007",
+    "REG_DATE": "2026/06/29, 09:12:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id008": {
+    "ID": "log_id008",
+    "REG_DATE": "2026/06/29, 09:14:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id009": {
+    "ID": "log_id009",
+    "REG_DATE": "2026/06/29, 09:18:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id010": {
+    "ID": "log_id010",
+    "REG_DATE": "2026/06/29, 09:26:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id011": {
+    "ID": "log_id011",
+    "REG_DATE": "2026/06/29, 09:33:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id012": {
+    "ID": "log_id012",
+    "REG_DATE": "2026/06/29, 09:41:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id013": {
+    "ID": "log_id013",
+    "REG_DATE": "2026/06/29, 09:53:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id014": {
+    "ID": "log_id014",
+    "REG_DATE": "2026/06/29, 10:01:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id015": {
+    "ID": "log_id015",
+    "REG_DATE": "2026/06/29, 10:07:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id016": {
+    "ID": "log_id016",
+    "REG_DATE": "2026/06/29, 10:14:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id017": {
+    "ID": "log_id017",
+    "REG_DATE": "2026/06/29, 10:16:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id018": {
+    "ID": "log_id018",
+    "REG_DATE": "2026/06/29, 10:22:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id019": {
+    "ID": "log_id019",
+    "REG_DATE": "2026/06/29, 10:45:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  },
+  "log_id020": {
+    "ID": "log_id020",
+    "REG_DATE": "2026/06/29, 11:11:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+  }
+}

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용자 로그</title>
+
+    <link rel="stylesheet"
+        href="{{ url_for('user_log.static', filename='css/logger.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <header class="page_header">
+
+        <h2>사용자 로그</h2>
+
+        <div class="button_group">
+
+            <button id="btn_selected" class="btn_read">
+                선택 항목 읽음 처리
+            </button>
+
+            <a class="btn_download" href="{{ url_for('user_log.export_user_data') }}">
+                엑셀 다운로드
+            </a>
+
+        </div>
+    </header>
+
+    <article class="table_wrap">
+
+        <table class="log_table">
+
+            <thead>
+                <tr>
+                    <th width="50"></th>
+                    <th>No.</th>
+                    <th>이벤트 ID</th>
+                    <th>사용자 ID</th>
+                    <th>확인 여부</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for log in logs %}
+
+                <tr>
+                    <td>
+                        <input type="checkbox" class="log_check" value="{{ log.ID }}">
+                    </td>
+
+                    <td>{{ loop.index }}</td>
+                    <td>{{ log.EVENT_LOG_ID }}</td>
+                    <td>{{ log.VIEWER_ID }}</td>
+
+                    <td>
+
+                        {% if log.IS_READ %}
+
+                            <span class="checked">확인</span>
+
+                        {% else %}
+
+                            <span class="unchecked">미확인</span>
+
+                        {% endif %}
+
+                    </td>
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="4" class="empty">
+                        등록된 사용자 로그가 없습니다.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </article>
+
+</div>
+<script>const checkAll = document.getElementById("checked_all");
+
+if (checkAll) {
+    checkAll.addEventListener("change", function () {
+
+        document.querySelectorAll(".log_check").forEach(function (checkbox) {
+            checkbox.checked = checkAll.checked;
+        });
+
+    });
+}
+</script>
+
+<script>
+const btnCheckAll = document.getElementById("btn_check_all");
+
+if (btnCheckAll) {
+    btnCheckAll.addEventListener("click", async function () {
+
+        if (!confirm("현재 페이지의 로그를 모두 읽음 처리하시겠습니까?")) {
+            return;
+        }
+
+        const ids = [];
+
+        document.querySelectorAll(".log_check").forEach(function (checkbox) {
+            ids.push(checkbox.value);
+        });
+
+        const response = await fetch("/user_log/checked_all", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ids: ids
+            })
+
+        });
+
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+</script>
+
+<script>
+// const btnSelected = document.getElementById("btn_selected");
+
+// if (btnSelected) {
+//     btnSelected.addEventListener("click", async function () {
+
+//         const ids = [];
+
+//         document.querySelectorAll(".log_check:checked").forEach(function (checkbox) {
+//             ids.push(checkbox.value);
+//         });
+
+//         if (ids.length === 0) {
+//             alert("선택된 로그가 없습니다.");
+//             return;
+//         }
+
+//         const response = await fetch("/user_log/get-checked", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify({
+//                 ids: ids
+//             })
+
+//         });
+
+//         if (response.ok) {
+//             location.reload();
+//         }
+//     });
+// }
+document.getElementById("btn_selected").addEventListener("click", async function () {
+
+    const ids = [];
+
+    document.querySelectorAll(".log_check:checked").forEach(function (checkbox) {
+        ids.push(checkbox.value);
+    });
+
+    if (ids.length === 0) {
+        alert("선택된 로그가 없습니다.");
+        return;
+    }
+
+    const response = await fetch("/user_log/get_checked", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            ids: ids
+        })
+    });
+
+    if (response.ok) {
+        location.reload();
+    }
+});
+</script>
+
+</body>
+</html>

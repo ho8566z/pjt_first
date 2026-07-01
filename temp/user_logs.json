@@ -1,0 +1,102 @@
+{
+  "user_001": {
+    "EVENT_LOG_ID": "log_id001",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_002": {
+    "EVENT_LOG_ID": "log_id002",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_003": {
+    "EVENT_LOG_ID": "log_id003",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_004": {
+    "EVENT_LOG_ID": "log_id004",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_005": {
+    "EVENT_LOG_ID": "log_id005",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_006": {
+    "EVENT_LOG_ID": "log_id006",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_007": {
+    "EVENT_LOG_ID": "log_id007",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_008": {
+    "EVENT_LOG_ID": "log_id008",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_009": {
+    "EVENT_LOG_ID": "log_id009",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_010": {
+    "EVENT_LOG_ID": "log_id010",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_011": {
+    "EVENT_LOG_ID": "log_id011",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_012": {
+    "EVENT_LOG_ID": "log_id012",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_013": {
+    "EVENT_LOG_ID": "log_id013",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_014": {
+    "EVENT_LOG_ID": "log_id014",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_015": {
+    "EVENT_LOG_ID": "log_id015",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_016": {
+    "EVENT_LOG_ID": "log_id016",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_017": {
+    "EVENT_LOG_ID": "log_id017",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_018": {
+    "EVENT_LOG_ID": "log_id018",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_019": {
+    "EVENT_LOG_ID": "log_id019",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  },
+  "user_020": {
+    "EVENT_LOG_ID": "log_id020",
+    "VIEWER_ID": "user1",
+    "IS_READ": false
+  }
+}
