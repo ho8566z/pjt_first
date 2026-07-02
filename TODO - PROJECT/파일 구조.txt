@@ -11,10 +11,9 @@ app\damain\logger\test.py
 
 app/
 ├── domains/
-│   └── jsons/
-│      ├── event_logs.json
-│      └── user_logs.json
-└── domains/
+    ├── jsons/
+    │  ├── event_logs.json
+    │  └── user_logs.json
     └── logger/
         ├── templates/
         │   ├── event_log_list.html
@@ -28,14 +27,8 @@ app/
         ├── user_logs/
         │   ├── user_logs.py
         │   └── routes.py
-        ├── logger_utils/
-        │   └── log_utils.py
+        └── logger_utils/
+             └── log_utils.py
 
 ========================================
 ========================================
-        │
-        ├── test.py
-        ├── app.py
-        └── utils/
-              ├── json_manager.py
-              └── time_stamper.py

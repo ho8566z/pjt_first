@@ -1,0 +1,80 @@
+{
+  "log_id001": {
+    "ID": "log_id001",
+    "REG_DATE": "2026/06/26, 09:05:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+    "IS_READ": true
+  },
+  "log_id002": {
+    "ID": "log_id002",
+    "REG_DATE": "2026/06/26, 10:05:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+    "IS_READ": false
+  },
+  "log_id003": {
+    "ID": "log_id003",
+    "REG_DATE": "2026/06/26, 11:22:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+    "IS_READ": false
+  }
+}
+---------------------------------------------------------------
+{
+  "user_001": {
+    "EVENT_LOG_ID": "log_id001",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/01, 15:15:20"
+  }
+}
+
+========================================
+========================================
+# 이벤트 로그
+{
+  "log_id001": {
+    "ID": "log_id001",
+    "REG_DATE": "2026/06/26, 09:05:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+    "IS_READ": true
+  },
+  "log_id002": {
+    "ID": "log_id002",
+    "REG_DATE": "2026/06/26, 10:05:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+    "IS_READ": true
+  },
+  "log_id003": {
+    "ID": "log_id003",
+    "REG_DATE": "2026/06/26, 11:22:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001"
+    "IS_READ": false
+  }
+}
+---------------------------------------------------------------
+# 사용자 로그
+{
+  "user_001": {
+    "EVENT_LOG_ID": "log_id001",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/01, 15:15:20"
+  },
+  "user_002": {
+    "EVENT_LOG_ID": "log_id002",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/02, 09:15:20"
+  }
+}
+
+이벤트 로그는 처음 알림되면, 'IS_READ'가 fasle상태이고, 웹문서에서 체크박스를 선택해서 '읽음' 처리하면, 'IS_READ'가 true로 변하면서 사용자 로그에 기록되고, 그때 사용자 로그의 'READ-DATE'가 입력되는 식으로
