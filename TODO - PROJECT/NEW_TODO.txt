@@ -1,0 +1,7 @@
+
+대시보드 패널에 로그 알림 띄우기
+
+-user_logs.json의 VIEWER_ID 받는걸, 로그인 중인 사용자 ID로 받도록
+
+#daily_log/obsidian_shield__logger.txt
+<-- python, html, css 호환성 변경하기 & 장동근 html, css로 맞추기

@@ -1,0 +1,48 @@
+/* ===== 테이블 ===== */
+
+.table_wrap {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.log_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.log_table thead {
+    background: #343a40;
+    color: white;
+}
+
+.log_table th,
+.log_table td {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.log_table tbody tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.log_table tbody tr:hover {
+    background: #eef5ff;
+}
+
+.table_bottom {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+
+/* ===== 데이터 없음 ===== */
+
+.empty {
+    padding: 25px;
+    color: #888;
+    text-align: center;
+}

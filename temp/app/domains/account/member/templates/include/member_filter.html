@@ -1,0 +1,55 @@
+<form class="filter_box" method="get" action="/member/list">
+
+    <div class="filter_row">
+        <div class="search_box">
+            <input type="text" name="keyword" placeholder="검색어를 입력하세요" value="{{ keyword }}">
+            <button type="submit">🔍</button>
+        </div>
+
+        <label>태그</label>
+        <select name="tag">
+            <option value="전체" {% if tag == "전체" %}selected{% endif %}>전체</option>
+            <option value="아이디" {% if tag == "아이디" %}selected{% endif %}>아이디</option>
+            <option value="이름" {% if tag == "이름" %}selected{% endif %}>이름</option>
+            <option value="역할" {% if tag == "역할" %}selected{% endif %}>역할</option>
+        </select>
+
+        <div class="right_btn">
+            <a href="/member/list?mode=add" class="add_member_btn">+ 회원 추가</a>
+        </div>
+    </div>
+
+    <div class="filter_row">
+        <label>권한 선택</label>
+        <select name="permission">
+            <option value="전체" {% if permission == "전체" %}selected{% endif %}>전체</option>
+            <option value="관리자" {% if permission == "관리자" %}selected{% endif %}>관리자</option>
+            <option value="관제자" {% if permission == "관제자" %}selected{% endif %}>관제자</option>
+        </select>
+
+        <label>승인 상태</label>
+        <select name="approve">
+            <option value="전체" {% if approve == "전체" %}selected{% endif %}>전체</option>
+            <option value="승인" {% if approve == "승인" %}selected{% endif %}>승인</option>
+            <option value="미승인" {% if approve == "미승인" %}selected{% endif %}>미승인</option>
+        </select>
+
+        <label>정렬</label>
+        <select name="sort">
+            <option value="최신등록순" {% if sort == "최신등록순" %}selected{% endif %}>최신등록순</option>
+            <option value="오래된순" {% if sort == "오래된순" %}selected{% endif %}>오래된순</option>
+            <option value="아이디순" {% if sort == "아이디순" %}selected{% endif %}>아이디순</option>
+            <option value="이름순" {% if sort == "이름순" %}selected{% endif %}>이름순</option>
+        </select>
+
+        <label>보기</label>
+        <select name="per_page">
+            <option value="10" {% if per_page == 10 %}selected{% endif %}>10개씩 보기</option>
+            <option value="20" {% if per_page == 20 %}selected{% endif %}>20개씩 보기</option>
+            <option value="30" {% if per_page == 30 %}selected{% endif %}>30개씩 보기</option>
+        </select>
+
+        <button type="submit" class="filter_btn">적용</button>
+    </div>
+
+</form>

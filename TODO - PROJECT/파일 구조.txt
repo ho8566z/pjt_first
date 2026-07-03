@@ -10,25 +10,47 @@
 app\damain\logger\test.py
 
 app/
-├── domains/
-    ├── jsons/
-    │  ├── event_logs.json
-    │  └── user_logs.json
-    └── logger/
-        ├── templates/
-        │   ├── event_log_list.html
-        │   └── user_log_list.html
-        ├── static/
-        │   └── css/
-        │       └── logger.css
-        ├── event_logs/
-        │   ├── event_logs.py
-        │   └── routes.py
-        ├── user_logs/
-        │   ├── user_logs.py
-        │   └── routes.py
-        └── logger_utils/
-             └── log_utils.py
+└── domains/
+      ├── jsons/
+      │   ├── event_logs.json
+      │   └── user_logs.json
+      │
+      └── logger/
+            ├── templates/
+            │   ├── include/
+            │   │   ├── log_button.html
+            │   │   ├── log_list_pagination.html
+            │   │   ├── log_table_event.html
+            │   │   ├── log_table_user.html
+            │   │   └── log_title.html
+            │   ├── log_list_event.html
+            │   └── log_list_user.html
+            │
+            ├── static/
+            │   ├── js/
+            │   │   ├── logger_check_all.js
+            │   │   └── logger_selected_read.js
+            │   │
+            │   └── css/
+            │         ├── logger.css
+            │         ├── logger_container.css
+            │         ├── logger_header.css
+            │         ├── logger_button.css
+            │         ├── logger_table.css
+            │         ├── logger_checked.css
+            │         ├── logger_pagination.css
+            │         └── logger_media_response.css
+            │
+            ├── event_logs/
+            │   ├── event_logs.py
+            │   └── routes.py
+            │
+            ├── user_logs/
+            │   ├── user_logs.py
+            │   └── routes.py
+            │
+            └── logger_utils/
+                  └── log_utils.py
 
 ========================================
 ========================================

@@ -1,0 +1,88 @@
+<section class="table_box">
+    <table>
+        <thead>
+            <tr>
+                <th>아이디</th>
+                <th>이름</th>
+                <th>역할</th>
+                <th>승인 상태</th>
+                <th>등록일</th>
+                <th>관리</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for account in account_db %}
+            <tr>
+                <td>{{ account.ID }}</td>
+                <td>{{ account.NAME }}</td>
+
+                {% if edit_id == account.ID %}
+
+                    <td>
+                        <form id="update_form_{{ account.ID }}" method="post" action="/member/update/{{ account.ID }}"></form>
+
+                        <select name="permission" form="update_form_{{ account.ID }}">
+                            <option value="관리자" {% if "관리자" in account.PERMISSIONS %}selected{% endif %}>관리자</option>
+                            <option value="관제자" {% if "관제자" in account.PERMISSIONS %}selected{% endif %}>관제자</option>
+                        </select>
+                    </td>
+
+                    <td>
+                        <select name="approve" form="update_form_{{ account.ID }}">
+                            <option value="승인" {% if account.IS_APPROVE %}selected{% endif %}>승인</option>
+                            <option value="미승인" {% if not account.IS_APPROVE %}selected{% endif %}>미승인</option>
+                        </select>
+                    </td>
+
+                    <td>{{ account.REG_DATE }}</td>
+
+                    <td class="actions">
+                        <button type="submit" form="update_form_{{ account.ID }}" class="edit">저장</button>
+                        <a class="delete" href="/member/list">취소</a>
+                    </td>
+
+                {% else %}
+                    <td>{{ account.PERMISSIONS | join(', ') }}</td>
+
+                    <td>
+                        {% if account.IS_APPROVE %}
+                            <span class="badge approve">승인</span>
+                        {% else %}
+                            <span class="badge wait">미승인</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ account.REG_DATE }}</td>
+
+                    <td class="actions">
+                        <a class="edit" href="/member/list?edit_id={{ account.ID }}">✎</a>
+                        <a class="delete"
+                           href="/member/delete/{{ account.ID }}"
+                           onclick="return confirm('{{ account.ID }} 회원을 삭제하시겠습니까?');">
+                            🗑
+                        </a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="/member/list?page={{ page - 1 }}&keyword={{ keyword }}&tag={{ tag }}&permission={{ permission }}&approve={{ approve }}&sort={{ sort }}&per_page={{ per_page }}">‹</a>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+            <a class="{% if p == page %}current{% endif %}"
+               href="/member/list?page={{ p }}&keyword={{ keyword }}&tag={{ tag }}&permission={{ permission }}&approve={{ approve }}&sort={{ sort }}&per_page={{ per_page }}">
+                {{ p }}
+            </a>
+        {% endfor %}
+
+        {% if page < total_pages %}
+            <a href="/member/list?page={{ page + 1 }}&keyword={{ keyword }}&tag={{ tag }}&permission={{ permission }}&approve={{ approve }}&sort={{ sort }}&per_page={{ per_page }}">›</a>
+        {% endif %}
+    </div>
+</section>

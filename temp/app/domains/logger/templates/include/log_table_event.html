@@ -1,0 +1,59 @@
+<article class="table_wrap">
+
+    <table class="log_table">
+
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="check_all">
+                </th>
+
+                <th>No.</th>
+                <th>이벤트ID</th>
+                <th>발생시간</th>
+                <th>위도</th>
+                <th>경도</th>
+                <th>대상ID</th>
+                <th>상태</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for event in events %}
+
+            <tr>
+
+                <td>
+                <input class="log_check" type="checkbox"
+                value="{{ event.ID }}" {% if event.IS_READ %}disabled{% endif %}>
+                </td>
+
+                <td>{{ loop.index }}</td>
+                <td>{{ event.ID }}</td>
+                <td>{{ event.REG_DATE }}</td>
+                <td>{{ event.latitude }}</td>
+                <td>{{ event.longitude }}</td>
+                <td>{{ event.TARGET_ID }}</td>
+
+                <td>
+                {% if event.IS_READ %}
+
+                <span class="checked">읽음</span>
+
+                {% else %}
+
+                <span class="unchecked">읽지않음</span>
+
+                {% endif %}
+
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</article>

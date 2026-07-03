@@ -1,0 +1,18 @@
+/* ===== 헤더 ===== */
+
+.page_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.page_header h2 {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.breadcrumb{
+    font-size:14px;
+    color:#666;
+}

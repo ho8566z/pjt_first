@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>
+        {% block title %}OBSIDIAN SHIELD{% endblock %}
+    </title>
+
+    <!-- 전체 공통 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+    <!-- 시스템 공통 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/system/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/system/topbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/system/sidebar.css') }}">
+
+    <!-- 페이지별 CSS -->
+    {% block css %}
+    {% endblock %}
+</head>
+
+<body>
+
+<div class="page">
+
+    {% include "includes/system_topbar.html" %}
+
+    <div class="layout">
+
+        {% include "includes/system_sidebar.html" %}
+
+        <main class="content">
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/system/theme.js') }}"></script>
+
+</body>
+
+</html>

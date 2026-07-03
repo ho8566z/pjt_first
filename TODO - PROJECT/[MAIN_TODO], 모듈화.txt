@@ -3,29 +3,28 @@ TODO - 07.03~~
 ==================================================
 [1] html 모듈화
 
-001. event_log_list.html
-002. user_log_list.html
-01. logger_엑셀 다운로드 버튼.html
-02. logger_페이지네이션.html
+01. event_log_list.html
+02. user_log_list.html
+03. log_list_pagination.html
 
 ==================================================
 [2] css 모듈화
 
-01. logger_전체.css
-01. logger_컨테이너.css
-02. logger_헤더.css
-03. logger_다운로드 버튼.css
-04. logger_테이블.css
-05. logger_상태.css
-06. logger_데이터 없음.css
-07. logger_페이지네이션 + 페이지당 표시 개수.css
-08. logger_반응형.css
+01. logger_main.css
+02. logger_container.css
+03. logger_header.css
+04. logger_download_btn.css
+05. logger_table.css
+06. logger_checked.css
+07. logger_none_data.css
+08. logger_pagination.css
+09. logger_media_response.css
 
 ==================================================
 [3] js 모듈화
 
-00. logger_전체 선택.js
-01. logger_선택 읽음 처리.js
+01. logger_check_all.js
+02. logger_selected_read.js
 
 ==================================================
-[4] 해주 = decode
+[4] code -> decode
