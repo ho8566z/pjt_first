@@ -1,0 +1,1462 @@
+기능명: 이벤트 로그	
+세부기능 명세: "로그 확인용 페이지 제공(LST-001과 상세 사양 동일)
+	표시 정보: 발생 장소, 시간, 탐지 대상 프로필
+	영상 관제에서 발생한 탐지 정보를 전용 DB에 로깅"
+
+기능명: 사용자 로그	
+세부기능 명세: "사용자가 서비스에 접근해 활동한 내역 로깅
+	(카메라 접근, 계정 생성, 승인 요청, 이벤트 로그 확인 및 처리 )"
+
+
+================================================================================================
+[ app/domains/logger/event_logs/event_logs.py ]
+
+from app.utils.time_stamper import (
+    get_current_time_stamp_formated)
+from app.utils.json_manager import (
+    load_json, save_json, EVENT_LOGS_FILE, 
+    USER_LOGS_FILE)
+
+
+def get_event_list():
+
+    logs = load_json(EVENT_LOGS_FILE)
+
+    return list(logs.values())
+
+
+def add_event(data):
+
+    logs = load_json(EVENT_LOGS_FILE)
+
+    logs[data["ID"]] = {
+        "ID": data["ID"],
+        "REG_DATE": get_current_time_stamp_formated(),
+        "latitude": data["latitude"],
+        "longitude": data["longitude"],
+        "TARGET_ID": data["TARGET_ID"],
+        "IS_READ": False
+    }
+
+    save_json(EVENT_LOGS_FILE, logs)
+
+
+def format_events(events):
+
+    cleaned_events = []
+
+    for event in events:
+        cleaned_events.append(
+            {
+                "이벤트_ID": event.get("ID"),
+                "이벤트_발생시각": event.get("REG_DATE"),
+                "이벤트_발생위도": event.get("latitude"),
+                "이벤트_발생경도": event.get("longitude"),
+                "대상_ID": event.get("TARGET_ID"),
+                "이벤트_상태": event.get("IS_READ")
+            }
+        )
+    return cleaned_events
+
+
+def checked_event_logs(event_ids, viewer_id):
+
+    events = load_json(EVENT_LOGS_FILE)
+    users = load_json(USER_LOGS_FILE)
+
+    for event_id in event_ids:
+
+        if event_id not in events:
+            continue
+
+        if events[event_id]["IS_READ"]:
+            continue
+
+        events[event_id]["IS_READ"] = True
+
+        read_date = get_current_time_stamp_formated()
+
+        user_id = f"user_{len(users)+1:03d}"
+
+        users[user_id] = {
+            "EVENT_LOG_ID": event_id,
+            "VIEWER_ID": viewer_id,
+            "READ_DATE": read_date
+        }
+
+    save_json(EVENT_LOGS_FILE, events)
+    save_json(USER_LOGS_FILE, users)
+
+
+if __name__ == "__main__":
+    events = get_event_list()
+
+    for event in events:
+        print(event)
+
+
+================================================================================================
+[ app/domains/logger/event_logs/routes.py ]
+
+from flask import Blueprint, render_template, request
+from app.domains.logger.event_logs.event_logs import (
+    get_event_list,add_event,format_events,
+    checked_event_logs)
+from app.domains.logger.logger_utils.log_utils import (
+    create_excel_file, download_excel_file)
+from app.utils.pagination import paginate
+
+
+event_log_bp = Blueprint(
+    "event_log",
+    __name__,
+    url_prefix="/event_log",
+    template_folder="../templates",
+    static_folder="../static"
+)
+
+@event_log_bp.route("/log_list_event")
+def event_list():
+
+    events = get_event_list()
+
+    per_page = request.args.get("per_page", default=10, type=int)
+    page = request.args.get("page", default=1, type=int)
+
+    events, total_pages = paginate(
+        events, 
+        page, 
+        per_page)
+
+    return render_template(
+        "log_list_event.html", 
+        events = events,
+        per_page = per_page,
+        page = page,
+        total_pages = total_pages)
+    
+
+@event_log_bp.route("/export_event_data")
+def export_event_data():
+
+    events = get_event_list()
+
+    cleaned_events = format_events(events)
+
+    output = create_excel_file(
+        cleaned_events, 
+        sheet_name="Event_Logs")
+
+    return download_excel_file(
+        output, 
+        "event_logs.xlsx")
+
+
+@event_log_bp.route("/add_event", methods=["POST"])
+def add_event_log():
+
+    data = request.get_json()
+
+    if not data:
+        return {
+            "result": "fail", 
+            "message": "Invalid JSON data"
+        }, 400
+     
+    add_event(data)
+
+    return {"result": "success"}, 201
+
+
+@event_log_bp.route("/checked_event_log", methods=["POST"])
+def checked_event():
+
+    data = request.get_json()
+
+    checked_event_logs(
+        data["ids"],
+        data["viewer_id"]
+    )
+
+    return {"result": "success"}
+
+
+================================================================================================
+[ app/domains/logger/user_logs/user_logs.py ]
+
+from app.utils.json_manager import (
+    load_json, save_json, USER_LOGS_FILE)
+
+
+def get_user_log_list():
+
+    logs = load_json(USER_LOGS_FILE)
+
+    result = []
+
+    for key, value in logs.items():
+
+        log = value.copy()
+        log["ID"] = key
+
+        result.append(log)
+
+    return result
+
+
+def format_user_logs(user_logs):
+    cleaned_user_logs = []
+
+    for user_log in user_logs:
+        cleaned_user_logs.append(
+            {
+                "이벤트_ID": user_log.get("EVENT_LOG_ID"),
+                "확인자_ID": user_log.get("VIEWER_ID"),
+                "이벤트_확인시각": user_log.get("READ_DATE")
+            }
+        )
+
+    return cleaned_user_logs
+
+
+if __name__ == "__main__":
+    user_logs = get_user_log_list()
+
+    for user_log in user_logs:
+        print(user_log)
+
+
+================================================================================================
+[ app/domains/logger/user_logs/routes.py ]
+
+from flask import Blueprint, render_template, request
+from app.domains.logger.user_logs.user_logs import (
+    get_user_log_list, format_user_logs)
+from app.domains.logger.logger_utils.log_utils import (
+    create_excel_file, download_excel_file)
+from app.utils.pagination import paginate
+
+
+user_log_bp = Blueprint(
+    "user_log",
+    __name__,
+    url_prefix="/user_log",
+    template_folder="../templates",
+    static_folder="../static"
+)
+
+@user_log_bp.route("/log_list_user")
+def user_log_list():
+
+    logs = get_user_log_list()
+
+    per_page = request.args.get("per_page", default=10, type=int)
+    page = request.args.get("page", default=1, type=int)
+
+    logs, total_pages = paginate(
+        logs,
+        page,
+        per_page)
+
+    return render_template(
+        "log_list_user.html",
+        logs = logs,
+        per_page = per_page,
+        page = page,
+        total_pages = total_pages)
+
+
+@user_log_bp.route("/export_user_data")
+def export_user_data():
+
+    logs = get_user_log_list()
+
+    cleand_logs = format_user_logs(logs)
+
+    output = create_excel_file(
+        cleand_logs, 
+        sheet_name="User_Logs")
+
+    return download_excel_file(
+        output, 
+        "user_logs.xlsx")
+
+
+================================================================================================
+[ app/domains/logger/logger_utils/log_utils.py ]
+
+from flask import send_file
+import pandas as pd
+import io
+
+
+def create_excel_file(cleaned_data, sheet_name):
+
+    data_frame = pd.DataFrame(cleaned_data)
+
+    output = io.BytesIO()
+
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        data_frame.to_excel(
+            writer,
+            index = False,
+            sheet_name = sheet_name
+        )
+
+    output.seek(0)
+
+    return output
+
+
+def download_excel_file(output, file_name):
+
+    return send_file(
+        output,
+        mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        as_attachment = True,
+        download_name = file_name
+    )
+
+
+================================================================================================
+================================================================================================
+================================================================================================
+[ app/domains/logger/templates/log_list_event.html ]
+
+{% extends "includes/system_layout.html" %}
+
+{% block title %}
+이벤트 로그
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('event_log.static', filename='css/logger.css') }}">
+{% endblock %}
+
+{% block content %}
+
+{% include "include/log_title.html" %}
+
+{% include "include/log_button.html" %}
+
+{% include "include/log_table_event.html" %}
+
+{% include "include/log_list_pagination.html" %}
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('event_log.static', filename='js/logger_check_all.js') }}"></script>
+<script src="{{ url_for('event_log.static', filename='js/logger_selected_read.js') }}"></script>
+{% endblock %}
+
+
+================================================================================================
+[ app/domains/logger/templates/log_list_user.html ]
+
+{% extends "includes/system_layout.html" %}
+
+{% block title %}
+사용자 로그
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('event_log.static', filename='css/logger.css') }}">
+{% endblock %}
+
+{% block content %}
+
+{% include "include/log_title.html" %}
+
+{% include "include/log_button.html" %}
+
+{% include "include/log_table_user.html" %}
+
+{% include "include/log_list_pagination.html" %}
+
+{% endblock %}
+
+
+================================================================================================
+[ app/domains/logger/templates/include/log_button.html ]
+
+<div class="button_group">
+
+{% if mode=="event" %}
+
+<button id="btn_selected" class="btn_read">
+선택 읽음 처리
+</button>
+
+{% endif %}
+
+<a class="btn_download" href="{{ download_url }}">
+엑셀 다운로드
+</a>
+
+</div>
+
+
+================================================================================================
+[ app/domains/logger/templates/include/log_list_pagination.html ]
+
+<div class="pagination_wrap">
+
+    <form method="get" class="per_page_form">
+
+        <select name="per_page" onchange="this.form.submit()">
+
+            <option value="10" {% if per_page == 10 %}selected{% endif %}>10개씩 보기</option>
+
+            <option value="20" {% if per_page == 20 %}selected{% endif %}>20개씩 보기</option>
+
+            <option value="30" {% if per_page == 30 %}selected{% endif %}>30개씩 보기</option>
+
+            <option value="50" {% if per_page == 50 %}selected{% endif %}>50개씩 보기</option>
+
+        </select>
+
+        <input type="hidden" name="page" value="1">
+
+    </form>
+
+    <div class="pagination">
+
+        {% if page > 1 %}
+            <a href="?page={{ page-1 }}&per_page={{ per_page }}">◀</a>
+        {% endif %}
+
+        {% for p in range(1,total_pages+1) %}
+
+            {% if p == page %}
+                <strong>{{ p }}</strong>
+            {% else %}
+                <a href="?page={{ p }}&per_page={{ per_page }}">{{ p }}</a>
+            {% endif %}
+
+        {% endfor %}
+
+        {% if page < total_pages %}
+            <a href="?page={{ page+1 }}&per_page={{ per_page }}">▶</a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+================================================================================================
+[ app/domains/logger/templates/include/log_table_event.html ]
+
+<article class="table_wrap">
+
+    <table class="log_table">
+
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="check_all">
+                </th>
+
+                <th>No.</th>
+                <th>이벤트ID</th>
+                <th>발생시간</th>
+                <th>위도</th>
+                <th>경도</th>
+                <th>대상ID</th>
+                <th>상태</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for event in events %}
+
+            <tr>
+
+                <td>
+                <input class="log_check" type="checkbox"
+                value="{{ event.ID }}" {% if event.IS_READ %}disabled{% endif %}>
+                </td>
+
+                <td>{{ loop.index }}</td>
+                <td>{{ event.ID }}</td>
+                <td>{{ event.REG_DATE }}</td>
+                <td>{{ event.latitude }}</td>
+                <td>{{ event.longitude }}</td>
+                <td>{{ event.TARGET_ID }}</td>
+
+                <td>
+                {% if event.IS_READ %}
+
+                <span class="checked">읽음</span>
+
+                {% else %}
+
+                <span class="unchecked">읽지않음</span>
+
+                {% endif %}
+
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</article>
+
+
+================================================================================================
+[ app/domains/logger/templates/include/log_table_user.html ]
+
+<article class="table_wrap">
+
+    <table class="log_table">
+
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>이벤트 ID</th>
+                <th>사용자 ID</th>
+                <th>읽은 시간</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for log in logs %}
+
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ log.EVENT_LOG_ID }}</td>
+                <td>{{ log.VIEWER_ID }}</td>
+                <td>{{ log.READ_DATE }}</td>
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="4" class="empty">
+                    등록된 사용자 로그가 없습니다.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</article>
+
+
+================================================================================================
+[ app/domains/logger/templates/include/log_title.html ]
+
+<header class="page_header">
+
+    <div>
+        <h2>{{ title }}</h2>
+        <p>{{ description }}</p>
+    </div>
+
+    <div class="breadcrumb">
+        🏠 〉 로그 조회 〉 {{ title }}
+    </div>
+
+</header>
+
+
+================================================================================================
+================================================================================================
+================================================================================================
+[ app/domains/logger/static/css/logger.css ]
+
+@import "logger_container.css";
+@import "logger_header.css";
+@import "logger_button.css";
+@import "logger_checked.css";
+@import "logger_table.css";
+@import "logger_pagination.css";
+@import "logger_media_response.css";
+
+
+================================================================================================
+[ app/domains/logger/static/css/logger_button.css ]
+
+/* ===== 다운로드 버튼 ===== */
+
+.btn_download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #4f8cff, #2563eb);
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn_download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.btn_download:active {
+    transform: translateY(0px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.btn_read {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    background: #198754;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.btn_read:hover {
+    background: #157347;
+}
+
+.btn_read:active {
+    transform: translateY(0);
+}
+
+.button_group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+
+================================================================================================
+[ app/domains/logger/static/css/logger_checked.css ]
+
+/* ===== 상태 ===== */
+
+.checked {
+    color: #198754;
+    font-weight: bold;
+}
+
+.unchecked {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.log_check,
+#check_all {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+
+================================================================================================
+[ app/domains/logger/static/css/logger_container.css ]
+
+/* ===== 컨테이너 ===== */
+
+.container{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+
+================================================================================================
+[ app/domains/logger/static/css/logger_header.css ]
+
+/* ===== 헤더 ===== */
+
+.page_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.page_header h2 {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.breadcrumb{
+    font-size:14px;
+    color:#666;
+}
+
+
+================================================================================================
+[ app/domains/logger/static/css/logger_media_response.css ]
+
+/* ===== 반응형 ===== */
+
+@media screen and (max-width: 768px) {
+
+    .page_header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .btn_download {
+        text-align: center;
+    }
+
+    .table_wrap {
+        overflow-x: auto;
+    }
+
+    .log_table {
+        min-width: 700px;
+    }
+
+    .button_group {
+        display:flex;
+        flex-direction:column;
+    }
+}
+
+
+================================================================================================
+[ app/domains/logger/static/css/logger_pagination.css ]
+
+/* ===== 페이지네이션 ===== */
+
+.pagination{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    margin:20px 0;
+}
+
+.pagination a,
+.pagination strong{
+    width:36px;
+    height:36px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border:1px solid #d0d0d0;
+    border-radius:5px;
+    text-decoration:none;
+}
+
+.pagination strong{
+    background:#222;
+    color:#fff;
+}
+
+
+/* ===== 페이지네이션 + 페이지당 표시 개수 ===== */
+
+.pagination_wrap{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:20px;
+}
+
+.per_page_form select{
+    width:120px;
+    height:36px;
+    padding:0 10px;
+    border:1px solid #d0d0d0;
+    border-radius:5px;
+    background:#fff;
+    cursor:pointer;
+}
+
+
+================================================================================================
+[ app/domains/logger/static/css/logger_table.css ]
+
+/* ===== 페이지네이션 ===== */
+
+.pagination{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    margin:20px 0;
+}
+
+.pagination a,
+.pagination strong{
+    width:36px;
+    height:36px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border:1px solid #d0d0d0;
+    border-radius:5px;
+    text-decoration:none;
+}
+
+.pagination strong{
+    background:#222;
+    color:#fff;
+}
+
+
+/* ===== 페이지네이션 + 페이지당 표시 개수 ===== */
+
+.pagination_wrap{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:20px;
+}
+
+.per_page_form select{
+    width:120px;
+    height:36px;
+    padding:0 10px;
+    border:1px solid #d0d0d0;
+    border-radius:5px;
+    background:#fff;
+    cursor:pointer;
+}
+
+
+================================================================================================
+================================================================================================
+================================================================================================
+[ app/domains/logger/static/js/ ]
+
+// ===== 전체 선택 =====
+const checkAll = document.getElementById("check_all");
+
+if (checkAll) {
+
+    checkAll.addEventListener("change", function () {
+
+        document.querySelectorAll(".log_check").forEach(function (checkbox) {
+
+            if (!checkbox.disabled) {
+                checkbox.checked = checkAll.checked;
+            }
+
+        });
+
+    });
+
+}
+
+
+================================================================================================
+[ app/domains/logger/static/js/ ]
+
+// ===== 선택 읽음 처리 =====
+const btnSelected = document.getElementById("btn_selected");
+
+if (btnSelected) {
+
+    btnSelected.addEventListener("click", async function () {
+
+        const ids = [];
+
+        document.querySelectorAll(".log_check:checked").forEach(function (checkbox) {
+            ids.push(checkbox.value);
+        });
+
+        if (ids.length === 0) {
+            alert("선택된 이벤트가 없습니다.");
+            return;
+        }
+
+        const response = await fetch("/event_log/checked_event_log", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ids: ids,
+                viewer_id: "user1"
+            })
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert("읽음 처리에 실패했습니다.");
+        }
+
+    });
+
+}
+
+
+================================================================================================
+================================================================================================
+================================================================================================
+[ app/jsons/event_logs.json ]
+
+{
+  "log_id001": {
+    "ID": "log_id001",
+    "REG_DATE": "2026/06/26, 09:05:00",
+    "latitude": 36.3287,
+    "longitude": 127.423,
+    "TARGET_ID": "target_001",
+    "IS_READ": false
+  },
+  "log_id002": {
+    "ID": "log_id002",
+    "REG_DATE": "2026/06/26, 10:05:00",
+    "latitude": 36.3322,
+    "longitude": 127.4346,
+    "TARGET_ID": "target_001",
+    "IS_READ": false
+  },
+  "log_id003": {
+    "ID": "log_id003",
+    "REG_DATE": "2026/06/26, 11:22:00",
+    "latitude": 37.5540,
+    "longitude": 126.9707,
+    "TARGET_ID": "target_001",
+    "IS_READ": false
+  },
+  "log_id004": {
+    "ID": "log_id004",
+    "REG_DATE": "2026/06/26, 13:53:00",
+    "latitude": 37.5126,
+    "longitude": 127.1025,
+    "TARGET_ID": "target_001",
+    "IS_READ": false
+  },
+  "log_id005": {
+    "ID": "log_id005",
+    "REG_DATE": "2026/06/26, 14:08:00",
+    "latitude": 36.3505,
+    "longitude": 127.3848,
+    "TARGET_ID": "target_001",
+    "IS_READ": false
+  }
+}
+
+
+================================================================================================
+[ app/jsons/ ]
+
+{}
+
+
+================================================================================================
+================================================================================================
+================================================================================================
+[ app/static/css/system/layout.css ]
+
+/* System Theme Variables */
+:root {
+    --system-bg: #050b12;
+    --system-bg-soft: #07111d;
+    --system-panel: rgba(7, 16, 27, 0.92);
+    --system-panel-light: rgba(12, 26, 43, 0.92);
+    --system-panel-border: rgba(120, 150, 180, 0.22);
+
+    --system-text: #f5f7fb;
+    --system-sub-text: #b5c0cf;
+    --system-muted-text: #9fb3c8;
+
+    --system-blue: #005be8;
+    --system-blue-light: #1976ff;
+
+    --system-input-bg: #07111c;
+    --system-input-border: #26394f;
+
+    --system-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme="light"] {
+    --system-bg: #f3f6fb;
+    --system-bg-soft: #eaf0f7;
+    --system-panel: #ffffff;
+    --system-panel-light: #f7faff;
+    --system-panel-border: #d8e0ea;
+
+    --system-text: #1b2633;
+    --system-sub-text: #667789;
+    --system-muted-text: #7a8b9e;
+
+    --system-blue: #1877f2;
+    --system-blue-light: #3b8cff;
+
+    --system-input-bg: #ffffff;
+    --system-input-border: #cfd8e3;
+
+    --system-shadow: 0 10px 24px rgba(27, 38, 51, 0.08);
+}
+
+/* System Layout */
+body {
+    background: var(--system-bg);
+    color: var(--system-text);
+}
+
+.page {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(0, 111, 255, 0.12), transparent 34%),
+        var(--system-bg);
+}
+
+.layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 20px 16px;
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: 28px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 14px;
+    background: var(--system-panel);
+    color: var(--system-text);
+    box-shadow: var(--system-shadow);
+}
+
+
+================================================================================================
+[ app/static/css/system/sidebar.css ]
+
+.sidebar {
+    width: 270px;
+    min-height: calc(100vh - 122px);
+    flex-shrink: 0;
+    padding: 22px 16px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 14px;
+    background: var(--system-panel);
+    box-shadow: var(--system-shadow);
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 16px;
+    border-radius: 10px;
+    color: var(--system-text);
+    font-size: 17px;
+    font-weight: 600;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar a:hover {
+    background: var(--system-panel-light);
+    color: var(--system-blue);
+    transform: translateX(3px);
+}
+
+.sidebar a.active {
+    background: var(--system-blue);
+    color: #ffffff;
+}
+
+
+================================================================================================
+[ app/static/css/system/topbar.css ]
+
+.top_header {
+    min-height: 82px;
+    padding: 0 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--system-panel);
+    border-bottom: 1px solid var(--system-panel-border);
+    color: var(--system-text);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo {
+    color: var(--system-blue);
+    font-size: 34px;
+    font-weight: bold;
+}
+
+.brand h1 {
+    font-size: 30px;
+    letter-spacing: 1px;
+}
+
+.admin_box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+}
+
+.profile {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--system-panel-light);
+}
+
+.theme_toggle_btn {
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 999px;
+    background: var(--system-panel-light);
+    color: var(--system-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.theme_toggle_btn:hover {
+    border-color: var(--system-blue);
+    color: var(--system-blue);
+}
+
+
+================================================================================================
+[ app/static/css/common.css ]
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: Arial, "Noto Sans KR", sans-serif;
+    color: #07192e;
+    background: #f4f7fb;
+    overflow-x: hidden;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+ul,ol {
+    list-style: none;
+}
+
+
+================================================================================================
+[ app/static/css/footer.css ]
+
+.footer {
+  height: 140px;
+  background: linear-gradient(90deg, #061426, #071d36 55%, #04101f);
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+}
+
+
+================================================================================================
+[ app/static/css/header.css ]
+
+.header {
+  height: 92px;
+  background: linear-gradient(90deg, #061426, #071d36 55%, #04101f);
+  display: flex;
+  align-items: center;
+  padding: 0 44px;
+  color: white;
+  box-shadow: 0 8px 28px rgba(4, 18, 34, 0.22);
+  position: relative;
+  z-index: 10;
+}
+
+
+================================================================================================
+================================================================================================
+================================================================================================
+[ app/static/js/system/thema.js ]
+
+document.addEventListener("DOMContentLoaded", function () {
+    const themeButton = document.querySelector("#theme_toggle_btn");
+
+    const savedTheme = localStorage.getItem("systemTheme") || "dark";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+
+    if (themeButton) {
+        themeButton.textContent = savedTheme === "dark" ? "화이트 모드" : "다크 모드";
+
+        themeButton.addEventListener("click", function () {
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+            document.documentElement.setAttribute("data-theme", nextTheme);
+            localStorage.setItem("systemTheme", nextTheme);
+
+            themeButton.textContent = nextTheme === "dark" ? "화이트 모드" : "다크 모드";
+        });
+    }
+});
+
+
+================================================================================================
+================================================================================================
+================================================================================================
+[ app/templates/include/footer.html ]
+
+<footer class="footer">© 2026 OBSIDIAN SHIELD · 쩜오 Company</footer>
+
+
+================================================================================================
+[ app/templates/include/header.html ]
+
+<header class="header">
+  <div class="brand">
+    <div>
+      <h1>OBSIDIAN SHIELD</h1>
+      <p>AI 기반 실시간 추적 관제 시스템</p>
+    </div>
+  </div>
+</header>
+
+
+================================================================================================
+[ app/templates/include/system_layout.html ]
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>
+        {% block title %}OBSIDIAN SHIELD{% endblock %}
+    </title>
+
+    <!-- 전체 공통 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+    <!-- 시스템 공통 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/system/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/system/topbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/system/sidebar.css') }}">
+
+    <!-- 페이지별 CSS -->
+    {% block css %}
+    {% endblock %}
+</head>
+
+<body>
+
+<div class="page">
+
+    {% include "includes/system_topbar.html" %}
+
+    <div class="layout">
+
+        {% include "includes/system_sidebar.html" %}
+
+        <main class="content">
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/system/theme.js') }}"></script>
+
+</body>
+
+</html>
+
+
+================================================================================================
+[ app/templates/include/system_sidebar.html ]
+
+<aside class="sidebar">
+    <nav>
+        <a href="#">▦ 대시보드</a>
+        <a href="#">⌖ 실시간</a>
+        <a href="#">● 탐지 대상</a>
+        <a href="#">🛡 탐지 이력</a>
+        <a href="#">📷 카메라 관리</a>
+        <a class="active" href="/member/list">👥 사용자 관리</a>
+        <a href="#">▤ 로그 조회</a>
+        <a href="#">👤 내 정보</a>
+    </nav>
+</aside>
+
+
+================================================================================================
+[ app/templates/include/system_topbar.html ]
+
+<header class="top_header">
+    <div class="brand">
+        <div class="logo">✦</div>
+        <h1>OBSIDIAN SHIELD</h1>
+    </div>
+
+    <div class="admin_box">
+        <button type="button" id="theme_toggle_btn" class="theme_toggle_btn">
+        화이트 모드
+        </button>
+        
+        <span>관리자</span>
+        <div class="profile">👤</div>
+    </div>
+</header>
+
+
+================================================================================================
+================================================================================================
+================================================================================================
+
+# 파일 구조
+
+app/
+├── jsons/
+│     ├── event_logs.json
+│     └── user_logs.json
+│
+├── static/
+│     ├── css/
+│     │     ├── system/
+│     │     │   ├── layout.css
+│     │     │   ├── sidebar.css
+│     │     │   └── topbar.css
+│     │     ├── common.css
+│     │     ├── footer.css
+│     │     └── header.css
+│     │
+│     └── js/
+│           └── system/
+│               └── thema.js
+│
+├── templates/
+│     └── include/
+│           ├── footer.html
+│           ├── header.html
+│           ├── system_layout.html
+│           ├── system_sidebar.html
+│           └── system_topbar.html
+│
+└── domains/
+      └── logger/
+            ├── templates/
+            │   ├── include/
+            │   │   ├── log_button.html
+            │   │   ├── log_list_pagination.html
+            │   │   ├── log_table_event.html
+            │   │   ├── log_table_user.html
+            │   │   └── log_title.html
+            │   ├── log_list_event.html
+            │   └── log_list_user.html
+            │
+            ├── static/
+            │   ├── js/
+            │   │   ├── logger_check_all.js
+            │   │   └── logger_selected_read.js
+            │   │
+            │   └── css/
+            │         ├── logger.css
+            │         ├── logger_button.css
+            │         ├── logger_checked.css
+            │         ├── logger_container.css
+            │         ├── logger_header.css
+            │         ├── logger_media_response.css
+            │         ├── logger_pagination.css
+            │         └── logger_table.css
+            │
+            ├── event_logs/
+            │   ├── event_logs.py
+            │   └── routes.py
+            │
+            ├── user_logs/
+            │   ├── user_logs.py
+            │   └── routes.py
+            │
+            └── logger_utils/
+                  └── log_utils.py
+			 
+
+
+
+첨부된 파일구조에서 domains 디렉토리 밖의 static의 css와 js, 그리고 templates의 html 코드를 보고, python flask 프레임워크에서 웹문서를 열었을때, logger 디렉토리 내부의 python코드와 html, css, 그리고 js까지 호환이 되도록 코드의 연결부분 들을 수정해줘
+(logger 내부의 코드들이 호환될 수 있게)
+
+1. includes로 바꿀케니깐, logger 내부에서 어디를 바꿔야 하는지 자세하게 알려줘 (내부 includes 경로같은거)
+
+2. thema.js가 아닌 theme.js라서 괜찮아
+
+3. event_log.html과 user_log.html의 CSS Blueprint를 자세하게 알려줘 (js도 같이 알려줘)
+
+4. routes.py에서 render_template로 넘기는 값 부족한게 어딘지 자세하게 알려줘
+
+5. routes.py에서 url_for import 안했는데, 어딘지 자세하게 알려줘
+
+6. logger_table.css 내용이 잘못됬는데, 전체를 바꿔야 하는지 자세하게 알려줘
+
+7. system_layout include 위치는 어떻게 바꿔야 하는지 자세하게 알려줘
+
+8. 추가로 발견한 문제점 역시, 어디를 어떻게 바꿔야 하는지 자세하게 알려줘
+
+
+1. 번호 출력은 어느 위치인지 자세하게 알려줘
+
+2. logger 내부에서 해결할 수 없는 부분을 어떻게든 안돼는지
+(log_list_event.html이나 log_list_user.html에서 script를 넣어도 안돼는지?)
+

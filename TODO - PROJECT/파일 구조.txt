@@ -9,12 +9,14 @@
 
 app\damain\logger\test.py
 
+# 파일 구조
+
 app/
+├── jsons/
+│     ├── event_logs.json
+│     └── user_logs.json
+│
 └── domains/
-      ├── jsons/
-      │   ├── event_logs.json
-      │   └── user_logs.json
-      │
       └── logger/
             ├── templates/
             │   ├── include/
@@ -33,13 +35,13 @@ app/
             │   │
             │   └── css/
             │         ├── logger.css
+            │         ├── logger_button.css
+            │         ├── logger_checked.css
             │         ├── logger_container.css
             │         ├── logger_header.css
-            │         ├── logger_button.css
-            │         ├── logger_table.css
-            │         ├── logger_checked.css
+            │         ├── logger_media_response.css
             │         ├── logger_pagination.css
-            │         └── logger_media_response.css
+            │         └── logger_table.css
             │
             ├── event_logs/
             │   ├── event_logs.py
