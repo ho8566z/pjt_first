@@ -2,6 +2,7 @@
 대시보드 패널에 로그 알림 띄우기
 : flask-socketio <- requirements에 포함할것
 -> pip install flask-socketio
+이거 말고 [서버 -> 웹] 일방향 통신으로 때리는 방식
 
 사이드바 - 로그 조회로 옮기기
 그리고, 사이드바 이벤트 로그 조회와 사용자 로그조회로 구분한거를,
