@@ -1,0 +1,57 @@
+{
+  "user_001": {
+    "EVENT_LOG_ID": "log_id001",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_002": {
+    "EVENT_LOG_ID": "log_id002",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_003": {
+    "EVENT_LOG_ID": "log_id003",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_004": {
+    "EVENT_LOG_ID": "log_id004",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_005": {
+    "EVENT_LOG_ID": "log_id005",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_006": {
+    "EVENT_LOG_ID": "log_id006",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_007": {
+    "EVENT_LOG_ID": "log_id007",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_008": {
+    "EVENT_LOG_ID": "log_id008",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_009": {
+    "EVENT_LOG_ID": "log_id009",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_010": {
+    "EVENT_LOG_ID": "log_id010",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:31:05"
+  },
+  "user_011": {
+    "EVENT_LOG_ID": "log_id077",
+    "VIEWER_ID": "user1",
+    "READ_DATE": "2026/07/06, 12:32:46"
+  }
+}

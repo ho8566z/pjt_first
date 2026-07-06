@@ -1,0 +1,71 @@
+/* System Theme Variables */
+:root {
+    --system-bg: #050b12;
+    --system-bg-soft: #07111d;
+    --system-panel: rgba(7, 16, 27, 0.92);
+    --system-panel-light: rgba(12, 26, 43, 0.92);
+    --system-panel-border: rgba(120, 150, 180, 0.22);
+
+    --system-text: #f5f7fb;
+    --system-sub-text: #b5c0cf;
+    --system-muted-text: #9fb3c8;
+
+    --system-blue: #005be8;
+    --system-blue-light: #1976ff;
+
+    --system-input-bg: #07111c;
+    --system-input-border: #26394f;
+
+    --system-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme="light"] {
+    --system-bg: #f3f6fb;
+    --system-bg-soft: #eaf0f7;
+    --system-panel: #ffffff;
+    --system-panel-light: #f7faff;
+    --system-panel-border: #d8e0ea;
+
+    --system-text: #1b2633;
+    --system-sub-text: #667789;
+    --system-muted-text: #7a8b9e;
+
+    --system-blue: #1877f2;
+    --system-blue-light: #3b8cff;
+
+    --system-input-bg: #ffffff;
+    --system-input-border: #cfd8e3;
+
+    --system-shadow: 0 10px 24px rgba(27, 38, 51, 0.08);
+}
+
+/* System Layout */
+body {
+    background: var(--system-bg);
+    color: var(--system-text);
+}
+
+.page {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(0, 111, 255, 0.12), transparent 34%),
+        var(--system-bg);
+}
+
+.layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 20px 16px;
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: 28px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 14px;
+    background: var(--system-panel);
+    color: var(--system-text);
+    box-shadow: var(--system-shadow);
+}

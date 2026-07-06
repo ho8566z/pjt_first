@@ -1,0 +1,63 @@
+.top_header {
+    min-height: 82px;
+    padding: 0 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--system-panel);
+    border-bottom: 1px solid var(--system-panel-border);
+    color: var(--system-text);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo {
+    color: var(--system-blue);
+    font-size: 34px;
+    font-weight: bold;
+}
+
+.brand h1 {
+    font-size: 30px;
+    letter-spacing: 1px;
+}
+
+.admin_box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+}
+
+.profile {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--system-panel-light);
+}
+
+.theme_toggle_btn {
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 999px;
+    background: var(--system-panel-light);
+    color: var(--system-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.theme_toggle_btn:hover {
+    border-color: var(--system-blue);
+    color: var(--system-blue);
+}

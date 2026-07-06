@@ -1,0 +1,11 @@
+.header {
+  height: 92px;
+  background: linear-gradient(90deg, #061426, #071d36 55%, #04101f);
+  display: flex;
+  align-items: center;
+  padding: 0 44px;
+  color: white;
+  box-shadow: 0 8px 28px rgba(4, 18, 34, 0.22);
+  position: relative;
+  z-index: 10;
+}

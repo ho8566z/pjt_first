@@ -98,9 +98,9 @@ if __name__ == "__main__":
 ================================================================================================
 [ app/domains/logger/event_logs/routes.py ]
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, url_for, request
 from app.domains.logger.event_logs.event_logs import (
-    get_event_list,add_event,format_events,
+    get_event_list, add_event, format_events,
     checked_event_logs)
 from app.domains.logger.logger_utils.log_utils import (
     create_excel_file, download_excel_file)
@@ -133,7 +133,12 @@ def event_list():
         events = events,
         per_page = per_page,
         page = page,
-        total_pages = total_pages)
+        total_pages = total_pages,
+        title = "이벤트 로그",
+        description = "영상 관제 이벤트 목록",
+        mode = "event",
+        download_url = url_for("event_log.export_event_data")
+    )
     
 
 @event_log_bp.route("/export_event_data")
@@ -185,7 +190,7 @@ def checked_event():
 [ app/domains/logger/user_logs/user_logs.py ]
 
 from app.utils.json_manager import (
-    load_json, save_json, USER_LOGS_FILE)
+    load_json, USER_LOGS_FILE)
 
 
 def get_user_log_list():
@@ -229,7 +234,7 @@ if __name__ == "__main__":
 ================================================================================================
 [ app/domains/logger/user_logs/routes.py ]
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, url_for, request
 from app.domains.logger.user_logs.user_logs import (
     get_user_log_list, format_user_logs)
 from app.domains.logger.logger_utils.log_utils import (
@@ -263,7 +268,12 @@ def user_log_list():
         logs = logs,
         per_page = per_page,
         page = page,
-        total_pages = total_pages)
+        total_pages = total_pages,
+        title = "사용자 로그",
+        description = "사용자의 로그 확인 내역",
+        mode = "user",
+        download_url = url_for("user_log.export_user_data")
+    )
 
 
 @user_log_bp.route("/export_user_data")
@@ -335,20 +345,19 @@ def download_excel_file(output, file_name):
 
 {% block content %}
 
-{% include "include/log_title.html" %}
+{% include "includes/log_title.html" %}
 
-{% include "include/log_button.html" %}
+{% include "includes/log_button.html" %}
 
-{% include "include/log_table_event.html" %}
+{% include "includes/log_table_event.html" %}
 
-{% include "include/log_list_pagination.html" %}
+{% include "includes/log_list_pagination.html" %}
 
-{% endblock %}
-
-{% block script %}
 <script src="{{ url_for('event_log.static', filename='js/logger_check_all.js') }}"></script>
 <script src="{{ url_for('event_log.static', filename='js/logger_selected_read.js') }}"></script>
+
 {% endblock %}
+
 
 
 ================================================================================================
@@ -361,18 +370,18 @@ def download_excel_file(output, file_name):
 {% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{{ url_for('event_log.static', filename='css/logger.css') }}">
+<link rel="stylesheet" href="{{ url_for('user_log.static', filename='css/logger.css') }}">
 {% endblock %}
 
 {% block content %}
 
-{% include "include/log_title.html" %}
+{% include "includes/log_title.html" %}
 
-{% include "include/log_button.html" %}
+{% include "includes/log_button.html" %}
 
-{% include "include/log_table_user.html" %}
+{% include "includes/log_table_user.html" %}
 
-{% include "include/log_list_pagination.html" %}
+{% include "includes/log_list_pagination.html" %}
 
 {% endblock %}
 
@@ -479,7 +488,7 @@ def download_excel_file(output, file_name):
                 value="{{ event.ID }}" {% if event.IS_READ %}disabled{% endif %}>
                 </td>
 
-                <td>{{ loop.index }}</td>
+                <td>{{ (page - 1) * per_page + loop.index }}</td>
                 <td>{{ event.ID }}</td>
                 <td>{{ event.REG_DATE }}</td>
                 <td>{{ event.latitude }}</td>
@@ -530,7 +539,7 @@ def download_excel_file(output, file_name):
             {% for log in logs %}
 
             <tr>
-                <td>{{ loop.index }}</td>
+                <td>{{ (page - 1) * per_page + loop.index }}</td>
                 <td>{{ log.EVENT_LOG_ID }}</td>
                 <td>{{ log.VIEWER_ID }}</td>
                 <td>{{ log.READ_DATE }}</td>
@@ -578,8 +587,8 @@ def download_excel_file(output, file_name):
 @import "logger_container.css";
 @import "logger_header.css";
 @import "logger_button.css";
-@import "logger_checked.css";
 @import "logger_table.css";
+@import "logger_checked.css";
 @import "logger_pagination.css";
 @import "logger_media_response.css";
 
@@ -789,58 +798,46 @@ def download_excel_file(output, file_name):
 ================================================================================================
 [ app/domains/logger/static/css/logger_table.css ]
 
-/* ===== 페이지네이션 ===== */
-
-.pagination{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:8px;
-    margin:20px 0;
+.table_wrap{
+    width:100%;
+    overflow-x:auto;
 }
 
-.pagination a,
-.pagination strong{
-    width:36px;
-    height:36px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    border:1px solid #d0d0d0;
-    border-radius:5px;
-    text-decoration:none;
+.log_table{
+    width:100%;
+    border-collapse:collapse;
 }
 
-.pagination strong{
-    background:#222;
-    color:#fff;
+.log_table thead{
+    background:#07192e;
 }
 
-
-/* ===== 페이지네이션 + 페이지당 표시 개수 ===== */
-
-.pagination_wrap{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top:20px;
+.log_table th{
+    padding:12px;
+    text-align:center;
+    border-bottom:2px solid #ddd;
 }
 
-.per_page_form select{
-    width:120px;
-    height:36px;
-    padding:0 10px;
-    border:1px solid #d0d0d0;
-    border-radius:5px;
-    background:#fff;
-    cursor:pointer;
+.log_table td{
+    padding:12px;
+    text-align:center;
+    border-bottom:1px solid #eee;
+}
+
+.log_table tbody tr:hover{
+    background:#06152d;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
 }
 
 
 ================================================================================================
 ================================================================================================
 ================================================================================================
-[ app/domains/logger/static/js/ ]
+[ app/domains/logger/static/js/logger_checked_all.js ]
 
 // ===== 전체 선택 =====
 const checkAll = document.getElementById("check_all");
@@ -863,7 +860,7 @@ if (checkAll) {
 
 
 ================================================================================================
-[ app/domains/logger/static/js/ ]
+[ app/domains/logger/static/js/logger_selected_read.js ]
 
 // ===== 선택 읽음 처리 =====
 const btnSelected = document.getElementById("btn_selected");
@@ -955,7 +952,7 @@ if (btnSelected) {
 
 
 ================================================================================================
-[ app/jsons/ ]
+[ app/jsons/user_logs.json ]
 
 {}
 
@@ -1402,7 +1399,8 @@ app/
             │   │   ├── log_list_pagination.html
             │   │   ├── log_table_event.html
             │   │   ├── log_table_user.html
-            │   │   └── log_title.html
+            │   │   ├── log_title.html
+            │   │   └── log_filter.html
             │   ├── log_list_event.html
             │   └── log_list_user.html
             │
@@ -1419,7 +1417,8 @@ app/
             │         ├── logger_header.css
             │         ├── logger_media_response.css
             │         ├── logger_pagination.css
-            │         └── logger_table.css
+            │         ├── logger_table.css
+            │         └── logger_filter.css
             │
             ├── event_logs/
             │   ├── event_logs.py
@@ -1430,7 +1429,9 @@ app/
             │   └── routes.py
             │
             └── logger_utils/
-                  └── log_utils.py
+                  ├── log_utils.py
+                  ├── log_filter.py
+                  └── log_request_filter.py
 			 
 
 

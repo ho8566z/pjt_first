@@ -1,0 +1,47 @@
+<div class="member_add_box">
+
+    <h2>회원 등록</h2>
+
+    <form method="post" action="/member/add">
+
+        <div class="add_row">
+            <label>아이디</label>
+            <input type="text" name="id">
+        </div>
+
+        <div class="add_row">
+            <label>비밀번호</label>
+            <input type="password" name="pw">
+        </div>
+
+        <div class="add_row">
+            <label>이름</label>
+            <input type="text" name="name">
+        </div>
+
+        <div class="add_row">
+            <label>전화번호</label>
+            <input type="text" name="phone">
+        </div>
+
+        <div class="add_row">
+            <label>이메일</label>
+            <input type="email" name="email">
+        </div>
+
+        <div class="add_row">
+            <label>역할</label>
+            <select name="permission">
+                <option value="관리자">관리자</option>
+                <option value="관제자">관제자</option>
+            </select>
+        </div>
+
+        <div class="btn_area">
+            <button class="save_btn" type="submit">등록</button>
+            <a class="cancel_btn" href="/member/list">취소</a>
+        </div>
+
+    </form>
+
+</div>
