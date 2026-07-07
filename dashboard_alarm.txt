@@ -1,0 +1,305 @@
+
+# 대시보드 패널에 로그 알림 띄우기
+
+[ Server-Sent Events(SSE) ]
+--> SSE + 알림음 + 화면 배지(Badge)
+
+1. Toast: 우측 상단 알림
+
+2. 이벤트로그 메뉴- 빨간 배지(📋이벤트로그 조회 -> 🔴이벤트로그 조회)
+
+3. 알림음: ding.mp3재생
+
+4. 테이블의 행 강조: 옅은 노란색으로 강조 -> 다시 원래대로
+
+5. 브라우저 Notification: 새 로그가 발생했습니다. <-브라우저 권한을 허용하면 가능
+
+===================================================================================================
+{ 전체 흐름 }
+
+AI
+↓
+
+로그 생성
+
+↓
+
+event_logs.json 저장
+
+↓
+
+SSE가 감지
+
+↓
+
+모든 브라우저에게
+
+"새 로그"
+
+↓
+
+JS
+
+↓
+
+1. Toast
+
+2. Badge 증가
+
+3. 알림음
+
+4. 로그 목록 새로고침
+
+===================================================================================================
+{ 구현 구조 }
+
+Flask
+
+↓
+
+event_logs.py
+
+↓
+
+add_event()
+
+↓
+
+event_logs.json
+
+↓
+
+SSE
+
+↓
+
+logger.js
+
+↓
+
+Toast
+
+↓
+
+Audio
+
+↓
+
+Table Refresh
+
+
+===================================================================================================
+app/
+├── jsons/
+│     ├── event_logs.json
+│     └── user_logs.json
+│
+├── static/
+│     ├── css/
+│     │     ├── system/
+│     │     │   ├── layout.css
+│     │     │   ├── sidebar.css
+│     │     │   └── topbar.css
+│     │     ├── common.css
+│     │     ├── footer.css
+│     │     └── header.css
+│     │
+│     └── js/
+│           └── system/
+│               └── theme.js
+│
+├── templates/
+│     └── include/
+│           ├── footer.html
+│           ├── header.html
+│           ├── system_layout.html
+│           ├── system_sidebar.html
+│           └── system_topbar.html
+│
+└── domains/
+      └── logger/
+            ├── templates/
+            │   ├── include/
+            │   │   ├── log_button.html
+            │   │   ├── log_list_pagination.html
+            │   │   ├── log_table_event.html
+            │   │   ├── log_table_user.html
+            │   │   ├── log_title.html
+            │   │   └── log_filter.html
+            │   ├── log_list_event.html
+            │   └── log_list_user.html
+            │
+            ├── static/
+            │   ├── js/
+            │   │   ├── logger_check_all.js
+            │   │   ├── logger_selected_read.js
+            │   │   └── "logger_alarm.js"
+            │   │
+            │   └── css/
+            │         ├── logger.css
+            │         ├── logger_button.css
+            │         ├── logger_checked.css
+            │         ├── logger_container.css
+            │         ├── logger_header.css
+            │         ├── logger_media_response.css
+            │         ├── logger_pagination.css
+            │         ├── logger_table.css
+            │         ├── logger_filter.css
+            │         └── "logger_alarm.css"
+            │
+            ├── event_logs/
+            │   ├── event_logs.py
+            │   └── "routes.py"
+            │
+            ├── user_logs/
+            │   ├── user_logs.py
+            │   └── routes.py
+            │
+            └── logger_utils/
+                  ├── log_utils.py
+                  ├── log_filter.py
+                  └── log_request_filter.py
+				  
+				  
+===================================================================================================
+===================================================================================================
+1. event_logs.py 전체 (필요한 함수 추가 및 수정)
+2. routes.py 전체 (SSE + /new?after= API까지)
+3. logger_alarm.js 전체 (실시간 갱신, Badge, Toast, 테이블 추가)
+4. log_table_event.html 수정 (필요한 경우)
+5. CSS 수정
+[ 6. 전체 동작 흐름 및 테스트 방법 ]
+
+                ┌─────────────────────────────┐
+                │      AI / 카메라 서버        │
+                └──────────────┬──────────────┘
+                               │
+                               │ POST /event_log/add_event
+                               ▼
+                 app/domains/logger/event_logs/routes.py
+                               │
+                               ▼
+                       add_event(data)
+                               │
+                               ▼
+                 app/domains/logger/event_logs/event_logs.py
+                               │
+        ┌──────────────────────┴──────────────────────┐
+        │                                             │
+        ▼                                             ▼
+ save_json(EVENT_LOGS_FILE)                  notify_new_log()
+        │                                             │
+        │                                             ▼
+        │                              event_notifier.py
+        │                              threading.Event.set()
+        │                                             │
+        ▼                                             ▼
+event_logs.json                             stream_log()
+                                                    │
+                                                    │ SSE
+                                                    ▼
+                                  logger_alarm.js (브라우저)
+                                                    │
+                        ┌───────────────────────────┴───────────────────────────┐
+                        │                           │                           │
+                        ▼                           ▼                           ▼
+                  알림음 재생                Toast 표시              GET /event_log/new
+                                                                        │
+                                                                        ▼
+                                                          get_new_event_list()
+                                                                        │
+                                                                        ▼
+                                                              새 로그 JSON 반환
+                                                                        │
+                                                                        ▼
+                                                             addLogRow()
+                                                                        │
+                     ┌──────────────────────────────────────────────────┴──────────────────────────────────────────────────┐
+                     ▼                                                  ▼                                                  ▼
+                테이블 맨 위 추가                               Badge 증가                                  번호 재계산
+				
+				
+===================================================================================================
+테스트 방법
+
+테스트 1: 서버 실행
+python main.py
+-> 정상 실행 확인
+
+Running on: http://127.0.0.1:5000
+
+-----------------------------------------------------------------
+테스트 2: 로그 페이지 접속
+http://127.0.0.1:5000/event_log/log_list_event
+
+Chrome에서 'F12' 클릭해서 Console 열기
+
+-----------------------------------------------------------------
+테스트 3: Console 확인
+
+페이지가 열리면 'EventSource'가 생성됩니다.
+
+에러가 없어야 합니다.
+
+-----------------------------------------------------------------
+테스트 4: 새 로그 생성
+
+Postman, 또는 Python import requests
+
+requests.post(
+
+    "http://127.0.0.1:5000/event_log/add_event",
+
+    json={
+        "ID":"log_100",
+        "latitude":"36",
+        "longitude":"127",
+        "TARGET_ID":"target001"
+    }
+)
+
+-----------------------------------------------------------------
+테스트 5: 브라우저 확인
+
+약 1초 안에 'Toast' 새 로그가 발생했습니다. <-출력
+
+-----------------------------------------------------------------
+테스트 6: Console 확인
+
+새 로그 발생 <- 출력
+
+-----------------------------------------------------------------
+테스트 7: 테이블 확인
+
+맨 위에 log_100 추가
+
+-----------------------------------------------------------------
+테스트 8: Badge 확인
+
+예)
+3
+↓
+
+4
+
+-----------------------------------------------------------------
+테스트 9: 새 로그 여러 개
+
+연속으로 log_101, log_102, log_103 추가
+↓
+
+모두, 실시간 표시
+
+-----------------------------------------------------------------
+테스트 10: 다른 브라우저
+
+Chrome, Edge, 또는 시크릿창에서 로그인
+↓
+
+같은 페이지
+↓
+
+다른 브라우저에서 POST
+↓
+
+모든 브라우저 동시에 Toast 발생하는지?

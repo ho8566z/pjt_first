@@ -1,0 +1,86 @@
+AI
+↓
+
+POST /event_log/add_event
+↓
+
+event_logs.py
+↓
+
+event_logs.json 저장
+↓
+
+notify_new_log()
+↓
+
+event_notifier.py
+↓
+
+Event 발생
+↓
+
+routes.py
+↓
+
+stream_log()
+↓
+
+브라우저
+↓
+
+logger_alarm.js
+↓
+
+Toast
+↓
+
+알림음
+
+
+=========================================================
+=========================================================
+event_logs.py
+
+-역할: 로그 저장
+
+-추가된 코드: notify_new_log()
+
+-설명: JSON 저장이 완료되면, 새 로그가 생겼음을 event_notifier에게 알려준다.
+
+=========================================================
+routes.py
+
+-역할: 브라우저와 연결
+
+-새 Endpoint: /event_log/stream_log
+
+-설명: 브라우저가 계속 연결되어 있다가 notify가 오면 즉시 data:new 을 전송한다.
+
+=========================================================
+logger_alarm.js
+
+-역할: 브라우저에서 SSE를 수신
+
+-설명
+: EventSource 연결
+↓
+
+새 로그 수신
+↓
+
+알림음
+↓
+
+Toast 출력
+
+=========================================================
+system_layout.html
+
+-역할: Toast를 출력할 공간 JS 로드
+(system_layout.html에 js를 script해야 웹의 모든 탭에서 알림이 뜨기 때문)
+
+
+
+
+
+
