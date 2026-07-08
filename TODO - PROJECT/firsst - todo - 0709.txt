@@ -1,0 +1,191 @@
+확인 결과 base.html에서는 logger_alarm.js가 1번만 호출되고 있습니다.
+
+현재:
+
+<script src="{{ url_for('event_log.static', filename='js/logger_alarm.js') }}"></script>
+
+이 부분은 문제가 없습니다.
+
+즉, 이전에 예상했던:
+
+base.html
+ └ logger_alarm.js
+
+log_list_event.html
+ └ logger_alarm.js
+
+같은 HTML 중복 삽입 문제는 아닙니다.
+
+현재 발생하는:
+
+GET /event_log/stream_log HTTP/1.1" 200
+GET /event_log/stream_log HTTP/1.1" 200
+GET /event_log/stream_log HTTP/1.1" 200
+GET /event_log/stream_log HTTP/1.1" 200
+
+의 원인은 다른 곳입니다.
+
+가장 가능성이 높은 원인은 SSE 연결을 생성하는 코드가 여러 번 실행되는 것입니다.
+
+원인 후보 1: window.addEventListener("load") 중복 실행
+
+현재 코드:
+
+window.addEventListener("load", function () {
+
+    const firstEventId = document.querySelector(".event_id");
+
+    if (firstEventId) {
+        lastLogId = firstEventId.innerText.trim();
+    }
+
+    connectSSE();
+});
+
+문제는:
+
+logger_alarm.js 자체가 1번 로드되어도,
+
+다른 JS에서 같은 함수를 호출하거나 페이지 이동 과정에서 script가 재평가되면 연결이 다시 생성될 수 있습니다.
+
+우선 수정할 부분
+1. 기존 코드
+window.addEventListener("load", function () {
+
+    const firstEventId = document.querySelector(".event_id");
+
+    if (firstEventId) {
+        lastLogId = firstEventId.innerText.trim();
+    }
+
+    connectSSE();
+});
+변경
+window.addEventListener("load", function () {
+
+
+    const firstEventId =
+        document.querySelector(".event_id");
+
+
+    if(firstEventId){
+
+        lastLogId =
+            firstEventId.innerText.trim();
+
+    }
+
+
+    if(!window.eventSource){
+
+        connectSSE();
+
+    }
+
+});
+원인 후보 2: window.eventSource 초기화 위치 문제
+
+현재 수정한 코드가 만약:
+
+let source = null;
+
+과 같이 남아있으면 효과가 없습니다.
+
+반드시 삭제:
+
+let source = null;
+
+그리고 최상단:
+
+if(!window.eventSource){
+
+    window.eventSource = null;
+
+}
+
+로 변경합니다.
+
+최종 형태
+
+파일 최상단:
+
+// SSE 연결
+if(!window.eventSource){
+
+    window.eventSource = null;
+
+}
+
+
+// 알림음
+const audio =
+    new Audio("/static/audio/ding.wav");
+
+
+// 마지막 로그 ID
+let lastLogId = null;
+
+connectSSE():
+
+function connectSSE(){
+
+
+    if(window.eventSource !== null){
+
+        console.log("이미 SSE 연결 존재");
+
+        return;
+
+    }
+
+
+    window.eventSource =
+        new EventSource(
+            "/event_log/stream_log"
+        );
+
+
+    window.eventSource.onmessage =
+        async function(event){
+
+            ...
+        };
+
+
+}
+그런데 현재 로그에서 더 중요한 단서
+
+이 부분:
+
+Wait Finish
+GET /event_log/stream_log 200
+Wait Finish
+GET /event_log/stream_log 200
+Wait Finish
+GET /event_log/stream_log 200
+
+시간이 모두:
+
+17:13:03
+
+으로 같습니다.
+
+즉 브라우저 새로고침 순간에 동시에 여러 개가 생성되고 있습니다.
+
+다음 확인이 필요합니다.
+
+log_list_event.html의 마지막 부분을 보여주세요.
+
+특히:
+
+{% extends %}
+{% block js %}
+<script>
+
+또는:
+
+<script src=
+
+부분입니다.
+
+base.html은 정상이라서, child template 쪽에서 script가 추가되고 있는지 확인해야 합니다.
