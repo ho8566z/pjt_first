@@ -1,0 +1,20 @@
+<header class="top_header">
+    <div class="brand">
+        <div class="logo"><img src="{{ url_for('static', filename='img/obsidian_shield.svg') }}" alt="Obsidian Shield"></div>
+        <h1>OBSIDIAN SHIELD</h1>
+    </div>
+
+    <div class="admin_box">
+        <button type="button" id="theme_toggle_btn" class="theme_toggle_btn">
+        화이트 모드
+        </button>
+        
+        <span> {{ session["id"] }} | {{ session["user_permission"] }} </span>
+        <button type="button" id="log_out"
+            onclick="alert('로그아웃 완료'); location.href='{{ url_for('main.signout_confirm') }}'">
+        로그아웃
+        </button>
+    
+        <div class="profile">👤</div>
+    </div>
+</header>

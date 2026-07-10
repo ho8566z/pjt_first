@@ -1,0 +1,8 @@
+/* ===========================
+   컨테이너
+=========================== */
+.container{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}

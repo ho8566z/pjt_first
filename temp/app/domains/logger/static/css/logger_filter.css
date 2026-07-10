@@ -1,0 +1,149 @@
+/* ===========================
+   필터 구역
+=========================== */
+.filter_box {
+    margin-top: 26px;
+    padding: 16px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 10px;
+    background: var(--system-panel-light);
+}
+
+.filter_row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+/* ===========================
+   필터 박스: 라벨
+=========================== */
+.filter_box label {
+    color: var(--system-blue);
+    font-size: 17px;
+    font-weight: bold;
+}
+
+/* ===========================
+   필터 박스: 검색어 입력 -1
+=========================== */
+.filter_row input {
+    flex: 1;
+    min-width: 260px;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid var(--system-input-border);
+    border-radius: 7px;
+    background: var(--system-input-bg);
+    color: var(--system-text);
+    font-size: 16px;
+}
+
+.filter_row input:focus {
+    outline: none;
+    border-color: var(--system-blue);
+}
+
+/* ===========================
+   필터 박스: 선택자
+=========================== */
+.filter_box select {
+    height: 48px;
+    min-width: 150px;
+    padding: 0 16px;
+    border: 1px solid var(--system-input-border);
+    border-radius: 7px;
+    background: var(--system-input-bg);
+    color: var(--system-text);
+    font-size: 16px;
+}
+
+.filter_box select:focus {
+    outline: none;
+    border-color: var(--system-blue);
+}
+
+/* ===========================
+   필터 박스: 버튼
+=========================== */
+.filter_btn {
+    width: 80px;
+    height: 48px;
+    border: 1px solid var(--system-input-border);
+    border-radius: 7px;
+    background: var(--system-blue);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s ease,
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+}
+
+.filter_btn:hover {
+    background: var(--system-blue-light);
+    box-shadow: 0 4px 10px rgba(0, 91, 232, 0.35);
+    transform: translateY(-1px);
+}
+
+.filter_btn:active {
+    transform: translateY(1px);
+}
+
+.filter_btn:focus {
+    outline: none;
+}
+
+/* ===========================
+   필터 박스: 검색어 입력 -2
+=========================== */
+.search_box {
+  flex: 1;
+  display: flex;
+  min-width: 280px;
+}
+
+.search_box input {
+  flex: 1;
+  height: 56px;
+  padding: 0 20px;
+  border: 1px solid var(--system-input-border);
+  border-radius: 8px 0 0 8px;
+  background: var(--system-input-bg);
+  color: var(--system-text);
+  font-size: 17px;
+}
+
+.search_box button {
+  width: 64px;
+  border: none;
+  border-radius: 0 8px 8px 0;
+  background: var(--system-blue);
+  color: #ffffff;
+  font-size: 26px;
+  box-shadow: 0 4px 12px rgba(0, 91, 232, 0.35);
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.search_box button:hover {
+  background: var(--system-blue-light);
+  box-shadow: 0 8px 18px rgba(0, 91, 232, 0.45);
+  transform: translateY(-2px);
+}
+
+.search_box button:active {
+  background: var(--system-blue);
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+  transform: translateY(2px) scale(0.96);
+}
+
+.search_box button:focus {
+  outline: none;
+}

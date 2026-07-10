@@ -1,0 +1,50 @@
+/* 전체 페이지 */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    text-align: left;
+}
+
+/* 지도 영역 */
+#map {
+    width: 100%;
+    height: 600px;
+
+}
+
+/* 팝업 */
+#div {
+    padding: 10px;
+    width: 220px;
+}
+
+.info-window {
+    width: 170px;
+    padding: 8px;
+    text-align: center;
+}
+
+
+
+.info-window img {
+    width: 110px;
+    max-height: 180px;
+    object-fit: contain;
+    border-radius: 5px;
+    image-rendering: auto;
+    display: block;
+    margin: 0 auto 8px;
+}
+
+.info-window h3{
+    margin: 5px 0;
+    font-size: 18px;
+}
+
+.info-window p{
+    font-size: 14px;
+    margin: 2px 0;
+}

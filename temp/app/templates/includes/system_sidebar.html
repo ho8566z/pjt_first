@@ -1,0 +1,32 @@
+<aside class="sidebar">
+  <nav>
+    <!-- <a class="menu" href="# ">🖥️ 대시보드</a> -->
+    <a class="menu" href="{{ url_for('stream.monitoring') }}">📡 실시간</a>
+    {% if 200 in session["permissions"] %}
+    <a class="menu" href="{{ url_for('stream.profile')}}">👁️ 탐지 대상</a>
+    <a class="menu" href="{{ url_for('stream.camera')}}">📷 카메라 관리</a>
+    <a class="menu" href="/member/list">👥 사용자 관리</a>
+    {% endif %}
+
+    <a class="menu" href="/map">🗺️ 지도</a>
+    <a class="menu" href="/event_log/log_list_event">📋 이벤트로그 조회</a>
+
+    {% if 200 in session["permissions"] %}
+    <a class="menu" href="/user_log/log_list_user">📄 사용자로그 조회</a>
+    {% endif %}
+  </nav>
+</aside>
+
+<script>
+  const currentPath = window.location.pathname;
+
+  const menus = document.querySelectorAll(".menu");
+
+  menus.forEach((menu) => {
+    const menuPath = new URL(menu.href).pathname;
+
+    if (currentPath === menuPath) {
+      menu.classList.add("active");
+    }
+  });
+</script>

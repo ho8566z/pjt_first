@@ -1,0 +1,84 @@
+{% extends "includes/system_layout.html" %}
+
+<!-- prettier-ignore -->
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('stream.static', filename='css/stream_common.css') }}" />
+<link rel="stylesheet" href="{{ url_for('stream.static', filename='css/camera_main.css') }}" />
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block content %}
+<div class="title_area">
+  <div>
+    <h2>카메라 관리</h2>
+    <p>카메라를 추가하거나 삭제합니다.</p>
+  </div>
+  <div class="breadcrumb">🏠 〉 관리자 〉 카메라 관리</div>
+</div>
+
+<div class="manager-section">
+  <div class="form-card">
+    <h3>카메라 등록</h3>
+    <form action="{{ url_for('stream.camera') }}" method="POST" class="form-inline">
+      <input type="hidden" name="action" value="add" />
+
+      <div class="form-group" style="flex: 1">
+        <label>카메라 ID</label>
+        <input type="text" name="cam_id" placeholder="예: 0" required />
+      </div>
+
+      <div class="form-group" style="flex: 3">
+        <label>영상 소스 주소</label>
+        <input type="text" name="src_path" placeholder="예: static/videos/test.mp4" required />
+      </div>
+
+      <div class="form-group" style="flex: 1">
+        <label>소스 타입</label>
+        <select name="src_type">
+          <option value="video" selected>동영상 파일</option>
+          <option value="stream">실시간 스트림</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label style="visibility: hidden">등록</label>
+        <button type="submit" class="btn-submit">등록하기</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="list-card">
+    <h3>등록된 카메라 리스트</h3>
+    <table class="cam-table">
+      <thead>
+        <tr>
+          <th>카메라 ID</th>
+          <th>타입</th>
+          <th>소스 주소(경로)</th>
+          <th>관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cam in cameras %}
+        <tr>
+          <td><strong>{{ cam.id }}</strong></td>
+          <td>{{ '동영상' if cam.is_video else '실시간 스트림' }}</td>
+          <td><code>{{ cam.src_path }}</code></td>
+          <td>
+            <form action="{{ url_for('stream.camera') }}" method="POST" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+              <input type="hidden" name="action" value="delete" />
+              <input type="hidden" name="cam_id" value="{{ cam.id }}" />
+              <button type="submit" class="btn-delete">삭제</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="empty-row">현재 등록된 카메라가 없습니다. 상단 폼에서 카메라를 추가해 주세요.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

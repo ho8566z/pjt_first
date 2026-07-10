@@ -1,0 +1,29 @@
+.pagination {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.pagination a {
+  width: 54px;
+  height: 48px;
+  border: 1px solid var(--system-input-border);
+  border-radius: 7px;
+  background: var(--system-input-bg);
+  color: var(--system-text);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination a:hover {
+  background: var(--system-panel-light);
+}
+
+.pagination a.current {
+  background: var(--system-blue);
+  color: #ffffff;
+}

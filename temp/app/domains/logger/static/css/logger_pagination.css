@@ -1,0 +1,29 @@
+/* ===========================
+   페이지네이션
+=========================== */
+.pagination{
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.pagination a,
+.pagination strong{
+    width: 54px;
+    height: 48px;
+    border: 1px solid var(--system-input-border);
+    border-radius: 7px;
+    background: var(--system-input-bg);
+    color: var(--system-text);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination strong{
+    background: var(--system-blue);
+    color:#fff;
+}

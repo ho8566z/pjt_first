@@ -1,0 +1,35 @@
+<div class="add_row">
+    <label>전화번호</label>
+
+    <input
+        type="text"
+        name="phone1"
+        placeholder="010"
+        maxlength="3"
+        style="width:60px;"
+        value="{{ member_data.phone1 if member_data else '' }}">
+
+    -
+
+    <input
+        type="text"
+        name="phone2"
+        placeholder="1234"
+        maxlength="4"
+        style="width:80px;"
+        value="{{ member_data.phone2 if member_data else '' }}">
+
+    -
+
+    <input
+        type="text"
+        name="phone3"
+        placeholder="5678"
+        maxlength="4"
+        style="width:80px;"
+        value="{{ member_data.phone3 if member_data else '' }}">
+
+    {% if error_field == "phone" %}
+        <p class="error">{{ error_message }}</p>
+    {% endif %}
+</div>

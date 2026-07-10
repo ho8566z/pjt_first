@@ -1,0 +1,23 @@
+.title_area {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.title_area h2 {
+  margin-bottom: 10px;
+  font-size: 34px;
+  color: var(--system-text);
+}
+
+.title_area p {
+  color: var(--system-sub-text);
+  font-size: 19px;
+}
+
+.breadcrumb {
+  color: var(--system-sub-text);
+  font-size: 17px;
+  white-space: nowrap;
+}

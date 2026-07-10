@@ -1,0 +1,215 @@
+/* 기본 초기화 */
+
+body {
+    background-color: #f4f6f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+
+/* 메인 영역 및 배경 요소 */
+.main-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 40px 20px;    
+    min-height: calc(100vh - 140px); 
+    overflow: hidden;
+    background: radial-gradient(circle at 55% 40%, rgba(255, 255, 255, 0.95), rgba(248, 251, 255, 0.86) 43%, rgba(238, 243, 249, 0.78) 72%), linear-gradient(120deg, #ffffff, #eef3f9);
+        }
+
+.bg-element {
+    position: absolute;
+    pointer-events: none; /* 클릭 방해 금지 */
+    z-index: 1;
+}
+
+
+/* 중앙 카드 스타일 */
+.setup-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 540px;
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.02);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 10; /* 카드 장식보다 위에 위치 */
+}
+
+/* 자물쇠 원형 아이콘 */
+.top-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #000000;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* 타이틀 */
+.title-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.title-section h2 {
+    font-size: 1.6rem;
+    color: #1a202c;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.title-section p {
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+/* 폼 스태킹 */
+.setup-form {
+    width: 100%;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.input-group label i {
+    margin-right: 4px;
+    font-size: 0.8rem;
+}
+
+/* 인풋 필드 감싸는 박스 */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: #1a202c;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input:focus {
+    outline: none;
+    border-color: #06152d;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(6, 21, 45, 0.1);
+}
+
+.input-wrapper input::placeholder {
+    color: #a0aec0;
+}
+
+/* 눈 비밀번호 보이기 버튼 */
+.toggle-password {
+    position: absolute;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #718096;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.toggle-password:hover {
+    color: #1a202c;
+}
+
+/* 안내 박스 */
+.info-box {
+    background-color: #f0f4f8;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 30px;
+}
+
+.info-box h3 {
+    font-size: 0.85rem;
+    color: #2d3748;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.info-box ul {
+    list-style: none;
+}
+
+.info-box ul li {
+    font-size: 0.8rem;
+    color: #4a5568;
+    margin-bottom: 6px;
+    position: relative;
+    padding-left: 12px;
+}
+
+.info-box ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #718096;
+}
+
+/* 변경 완료 버튼 */
+.submit-btn {
+    width: 100%;
+    background-color: #06152d;
+    color: #ffffff;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.submit-btn:hover {
+    background-color: #0c2347;
+}
+
+.message-box {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 35px;
+}
+
+.message-box p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+}

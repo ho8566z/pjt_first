@@ -7,37 +7,74 @@
 세부기능 명세: "사용자가 서비스에 접근해 활동한 내역 로깅
 	(카메라 접근, 계정 생성, 승인 요청, 이벤트 로그 확인 및 처리 )"
 
-app\damain\logger\test.py
+
+================================================================================
+================================================================================
 
 # 파일 구조
 
 app/
 ├── jsons/
 │     ├── event_logs.json
-│     └── user_logs.json
+│     ├── user_logs.json
+│     └── event_capture.json
+│
+├── templates/
+│     └── include/
+│           ├── footer.html
+│           ├── header.html
+│           ├── system_layout.html
+│           ├── system_sidebar.html
+│           └── system_topbar.html
+│
+├── static/
+│     ├── css/
+│     │     ├── common.css
+│     │     ├── footer.css
+│     │     ├── header.css
+│     │     └── system/
+│     │         ├── layout.css
+│     │         ├── sidebar.css
+│     │         └── topbar.css
+│     │
+│     ├── img/
+│     │     └── event_img/
+│     │         └── ferrari.jpg
+│     │
+│     ├── js/
+│     │     └── system/
+│     │         └── theme.js
+│     │
+│     └── audio/
+│           └── ding.wav
 │
 └── domains/
       └── logger/
             ├── templates/
-            │   ├── include/
-            │   │   ├── log_button.html
-            │   │   ├── log_list_pagination.html
-            │   │   ├── log_table_event.html
-            │   │   ├── log_table_user.html
-            │   │   └── log_title.html
             │   ├── log_list_event.html
-            │   └── log_list_user.html
+            │   ├── log_list_user.html
+            │   └── includes/
+            │       ├── log_button.html
+            │       ├── log_event_filter.html
+            │       ├── log_list_pagination.html
+            │       ├── log_table_event.html
+            │       ├── log_table_user.html
+            │       ├── log_title.html
+            │       └── log_user_filter.html
             │
             ├── static/
             │   ├── js/
+            │   │   ├── logger_alarm.js
             │   │   ├── logger_check_all.js
             │   │   └── logger_selected_read.js
             │   │
             │   └── css/
             │         ├── logger.css
+            │         ├── logger_alarm.css
             │         ├── logger_button.css
             │         ├── logger_checked.css
             │         ├── logger_container.css
+            │         ├── logger_filter.css
             │         ├── logger_header.css
             │         ├── logger_media_response.css
             │         ├── logger_pagination.css
@@ -52,7 +89,11 @@ app/
             │   └── routes.py
             │
             └── logger_utils/
-                  └── log_utils.py
+                ├── event_log_filter.py
+                ├── event_notifier.py
+                ├── log_request_filter.py
+                ├── log_utils.py
+                └── user_log_filter.py
 
-========================================
-========================================
+================================================================================
+================================================================================

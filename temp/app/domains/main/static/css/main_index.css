@@ -1,0 +1,165 @@
+.main {
+  min-height: calc(100vh - 140px);
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 55% 40%, rgba(255, 255, 255, 0.95), rgba(248, 251, 255, 0.86) 43%, rgba(238, 243, 249, 0.78) 72%), linear-gradient(120deg, #ffffff, #eef3f9);
+}
+
+.center-area {
+  display: flex;
+  flex-direction: column;
+  /* padding-bottom: 60px; */
+}
+
+/* 상단 헤더 바 */
+.header-bar {
+    background-color: #06152d; /* 깊은 네이비 톤 */
+    color: #ffffff;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.title-box h2 {
+  font-size: 78px;
+  line-height: 0.98;
+  letter-spacing: 4px;
+  font-weight: 900;
+  color: #07192e;
+  text-shadow: 0 4px 8px rgba(7, 25, 46, 0.14);
+}
+
+.title-box p {
+  margin-top: 24px;
+  font-size: 27px;
+  font-weight: 500;
+}
+
+.section {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  margin-top: 100px;
+}
+
+.login-card {
+  width: 580px;
+  margin-top: 32px;
+  padding: 45px 42px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(207, 216, 228, 0.85);
+  border-radius: 20px;
+  box-shadow: 0 20px 55px rgba(7, 25, 46, 0.13);
+  backdrop-filter: blur(8px);
+}
+
+.input-box {
+  height: 74px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #d6dee9;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0 28px;
+  margin-bottom: 22px;
+  transition: 0.25s;
+}
+
+.input-box:hover {
+  border-color: #9fb2cc;
+  box-shadow: 0 8px 20px rgba(7, 25, 46, 0.06);
+}
+
+.input-box .icon {
+  font-size: 24px;
+}
+
+.input-box strong {
+  width: 45px;
+  font-size: 23px;
+}
+
+.input-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 20px;
+  color: #07192e;
+}
+
+.input-box input::placeholder {
+  color: #a5afbc;
+}
+
+.login-card button {
+  width: 100%;
+  height: 76px;
+  border: none;
+  border-radius: 11px;
+  margin-top: 16px;
+  background: linear-gradient(90deg, #061426, #08203d);
+  color: white;
+  font-size: 27px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(7, 25, 46, 0.18);
+  transition: 0.25s;
+}
+
+.login-card button:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(90deg, #092447, #0a315e);
+}
+
+@media (max-width: 1200px) {
+  .center-area {
+    align-items: center;
+    text-align: center;
+  }
+
+  .login-card {
+    width: min(580px, 92vw);
+  }
+
+  .title-box h2 {
+    font-size: 58px;
+  }
+}
+
+.message-box {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.message-box .ok {
+  color: green;
+  font-weight: bold;
+}
+
+.message-box .error {
+  color: red;
+  font-weight: bold;
+}
+
+.captcha-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* 가운데 정렬 */
+    margin: 15px 0;
+}
+
+.captcha-box img {
+    margin-bottom: 10px;
+}
+
+.captcha-box{
+    margin-top:20px;
+    padding:15px;
+    border:1px solid #444;
+    border-radius:10px;
+    background:#1f2937;
+    text-align:center;
+}

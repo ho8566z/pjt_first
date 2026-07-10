@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>승인 대기</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0f172a;   /* 네이비 배경 */
+            font-family: "맑은 고딕", sans-serif;
+        }
+
+        #toast {
+            min-width: 420px;
+            padding: 35px 50px;
+            background-color: #1e3a5f;
+            border-left: 6px solid #4f8cff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        #toast h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        #toast p {
+            color: #d6e4ff;
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="toast">
+    <h2>승인 대기 중입니다.</h2>
+    <p>관리자 승인 후 이용 가능합니다.</p>
+</div>
+
+<script>
+    setTimeout(function () {
+        window.location.href = "/";
+    }, 3000);
+</script>
+
+</body>
+</html>

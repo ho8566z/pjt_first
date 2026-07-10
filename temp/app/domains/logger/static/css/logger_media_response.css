@@ -1,0 +1,28 @@
+/* ===========================
+   반응형
+=========================== */
+@media screen and (max-width: 768px) {
+
+    .page_header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .btn_download {
+        text-align: center;
+    }
+
+    .table_wrap {
+        overflow-x: auto;
+    }
+
+    .log_table {
+        min-width: 700px;
+    }
+
+    .button_group {
+        display:flex;
+        flex-direction:column;
+    }
+}

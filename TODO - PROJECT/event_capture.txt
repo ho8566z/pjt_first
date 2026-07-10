@@ -1,0 +1,14 @@
+{
+    "ID": (uuid로 만들어진: "b73c7576-3ab1-4cbd-ba2b-fcc5c39d3532"),
+    "REG_DATE": (ex: "2026/07/09, 10:57:49"),
+    "IMG_ROOT": "app/static/img/event_img/ferrari.jpg"
+}
+
+=================================================
+
+{
+    "b73c7576-3ab1-4cbd-ba2b-fcc5c39d3532" : {
+    "REG_DATE": "2026/07/09, 10:57:49",
+    "IMG_ROOT": "app/static/img/event_img/ferrari.jpg"
+    }
+}

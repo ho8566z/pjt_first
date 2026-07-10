@@ -1,0 +1,13 @@
+{% if session.get("login_fail",0) >= 3 %}
+
+    <div class="captcha-box">
+
+        <img src="{{ url_for('static', filename='captcha.png') }}">
+        <input
+            type="text"
+            name="captcha"
+            placeholder="보이는 문자를 입력하세요">
+
+    </div>
+
+{% endif %}

@@ -1,0 +1,15 @@
+.camera-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(640px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.camera-grid img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  /* 로딩 전이나 빈 화면일 때 검은 배경 */
+  /* background: #000; */
+}

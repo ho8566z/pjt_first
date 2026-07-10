@@ -1,0 +1,72 @@
+{
+  "target_001": {
+    "ID": "target_001",
+    "NAME": "human01",
+    "AGE": 20,
+    "SHORT_DESCRIPTION": "실종자",
+    "DESCRIPTION": "상세 설명",
+    "IMAGE": "human01.jpg",
+    "REG_DATE": "2026/06/26, 10:58:00",
+    "MOD_DATE": "2026/06/26, 10:58:00"
+  },
+  "target_002": {
+    "ID": "target_002",
+    "NAME": "human02",
+    "AGE": 35,
+    "SHORT_DESCRIPTION": "용의자",
+    "DESCRIPTION": "상세 설명",
+    "IMAGE": "human02.jpeg",
+    "REG_DATE": "2026/06/27, 11:50:00",
+    "MOD_DATE": "2026/06/27, 11:50:00"
+  },
+  "target_003": {
+    "ID": "target_003",
+    "NAME": "human03",
+    "AGE": 42,
+    "SHORT_DESCRIPTION": "실종자",
+    "DESCRIPTION": "상세 설명",
+    "IMAGE": "human03.jpg",
+    "REG_DATE": "2026/06/28, 12:10:00",
+    "MOD_DATE": "2026/06/28, 12:10:00"
+  },
+  "target_004": {
+    "ID": "target_004",
+    "NAME": "human04",
+    "AGE": 28,
+    "SHORT_DESCRIPTION": "관심 대상",
+    "DESCRIPTION": "상세 설명",
+    "IMAGE": "human04.png",
+    "REG_DATE": "2026/07/01, 13:58:00",
+    "MOD_DATE": "2026/07/01, 13:58:00"
+  },
+  "chris001": {
+    "ID": "chris001",
+    "NAME": "불명",
+    "AGE": "불명",
+    "SHORT_DESCRIPTION": "절도",
+    "DESCRIPTION": "휴대폰 절도",
+    "IMAGE": "chris001_chris_01.png",
+    "REG_DATE": "2026/07/08, 15:51:31",
+    "MOD_DATE": "2026/07/08, 15:51:31"
+  },
+  "dongja001": {
+    "ID": "dongja001",
+    "NAME": "옥동자",
+    "AGE": "32",
+    "SHORT_DESCRIPTION": "특수폭행 강도",
+    "DESCRIPTION": "2026/07/28",
+    "IMAGE": "dongja001_sam_01.png",
+    "REG_DATE": "2026/07/08, 15:53:16",
+    "MOD_DATE": "2026/07/08, 15:53:16"
+  },
+  "faul001": {
+    "ID": "faul001",
+    "NAME": "폴 피닉스",
+    "AGE": "37",
+    "SHORT_DESCRIPTION": "폭행",
+    "DESCRIPTION": "묻지마 폭행",
+    "IMAGE": "faul001_faul_01.png",
+    "REG_DATE": "2026/07/08, 15:54:54",
+    "MOD_DATE": "2026/07/08, 15:54:54"
+  }
+}

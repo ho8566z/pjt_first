@@ -1,0 +1,72 @@
+{
+  "user_001": {
+    "EVENT_LOG_ID": "log_id100",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_002": {
+    "EVENT_LOG_ID": "log_id099",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_003": {
+    "EVENT_LOG_ID": "log_id098",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_004": {
+    "EVENT_LOG_ID": "log_id097",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_005": {
+    "EVENT_LOG_ID": "log_id096",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_006": {
+    "EVENT_LOG_ID": "log_id095",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_007": {
+    "EVENT_LOG_ID": "log_id094",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_008": {
+    "EVENT_LOG_ID": "log_id093",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_009": {
+    "EVENT_LOG_ID": "log_id092",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_010": {
+    "EVENT_LOG_ID": "log_id091",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/07, 15:42:36"
+  },
+  "user_011": {
+    "EVENT_LOG_ID": "cd45d9da-d166-4f84-af4a-8ceef8f6f15f",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/09, 13:58:32"
+  },
+  "user_012": {
+    "EVENT_LOG_ID": "52adfa14-a73c-4867-8a78-8397b3303d59",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/09, 14:09:05"
+  },
+  "user_013": {
+    "EVENT_LOG_ID": "ec6a24d8-2155-45e8-855e-ec1eeb950b6a",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/09, 14:09:05"
+  },
+  "user_014": {
+    "EVENT_LOG_ID": "b8dc060f-9eb9-4a54-8029-39f9a90d3bff",
+    "VIEWER_ID": "admin",
+    "READ_DATE": "2026/07/09, 14:09:05"
+  }
+}

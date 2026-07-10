@@ -1,0 +1,38 @@
+{# system_layout.html의 공통 레이아웃(헤더/네비 등)을 상속받아 사용 #}
+{% extends "includes/system_layout.html" %}
+
+#css.
+{# 이 페이지(map) 전용 css 파일 로드 - map 블루프린트의 static 폴더 참조 #}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('map.static', filename='css/map.css') }}" />
+{% endblock %}
+
+{% block content %}
+
+    <h2>위치추적</h2>
+    
+    {# 타겟 선택 드롭다운 - JS(map.js)에서 옵션이 동적으로 추가됨 #}
+    {# "전체" 옵션(value="")은 모든 타겟을 다시 보여주는 기본값 #}
+    <select id="targetSelect">
+        <option value="">전체</option>
+    </select>
+    
+    {# 카카오맵이 렌더링될 컨테이너 - map.js에서 이 div를 가져와 지도 생성 #}
+    <div id="map"></div>
+
+    {# 카카오맵 JavaScript SDK 로드 (appkey 필요) #}
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=44189775bf7dd7f1446cae3935c832f3"></script>
+    <script>
+        // 서버(get_map_data)에서 넘겨받은 타겟 데이터를 JS 객체로 변환
+        // tojson 필터로 파이썬 리스트/딕셔너리를 JS에서 바로 쓸 수 있는 JSON으로 직렬화
+        const maps = {{ maps | tojson }};
+        
+        // 타겟 프로필 이미지의 기본 경로 (map.js에서 imageSrc 조합에 사용)
+        const imageBaseUrl = "{{ url_for('map.static', filename='images/') }}";
+    
+    </script>
+
+    {# 실제 지도 로직(마커, 폴리라인, InfoWindow 등)이 담긴 커스텀 JS 파일 #}
+    <script src="{{ url_for('map.static', filename='js/map.js') }}"></script>
+    
+{% endblock %}

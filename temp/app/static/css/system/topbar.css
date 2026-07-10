@@ -1,0 +1,110 @@
+.top_header {
+    min-height: 92px;
+    padding: 0 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--system-panel);
+    border-bottom: 1px solid var(--system-panel-border);
+    color: var(--system-text);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo {
+    color: var(--system-blue);
+    background: transparent;
+}
+
+.logo img {
+    width: 58px;
+    height: 58px;
+    display: block;
+    object-fit: contain;
+}
+
+.brand h1 {
+    font-size: 30px;
+    letter-spacing: 1px;
+}
+
+.admin_box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+}
+
+.profile {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--system-panel-light);
+}
+
+.theme_toggle_btn {
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--system-panel-border);
+    border-radius: 999px;
+    background: var(--system-panel-light);
+    color: var(--system-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.theme_toggle_btn:hover {
+    border-color: var(--system-blue);
+    color: var(--system-blue);
+}
+
+.system_logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.system_logo img {
+    width: 36px;
+    height: 36px;
+    display: block;
+}
+
+#log_out {
+    width: 90px;
+    height: 36px;
+
+    background-color: #e74c3c;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+/* 마우스 올렸을 때 */
+#log_out:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* 클릭할 때 */
+#log_out:active {
+    transform: scale(0.95);
+}

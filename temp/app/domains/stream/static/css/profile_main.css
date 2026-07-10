@@ -1,0 +1,251 @@
+.table_box {
+  margin-top: 18px;
+  border: 1px solid var(--system-panel-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--system-panel);
+}
+
+.table_box table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table_box th,
+.table_box td {
+  height: 72px;
+  padding: 0 34px;
+  text-align: left;
+  border-bottom: 1px solid var(--system-panel-border);
+  font-size: 20px;
+  vertical-align: middle;
+}
+
+.table_box th {
+  color: var(--system-text);
+  font-weight: bold;
+  background: var(--system-panel-light);
+}
+
+.table_box td {
+  color: var(--system-text);
+}
+
+.profile-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--system-panel-border);
+  background: #000;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--system-sub-text);
+  padding: 40px 0;
+  font-size: 18px;
+}
+
+/* ============================== */
+#item_add_box {
+  margin-top: 20px;
+  padding: 30px;
+  border: 1px solid var(--system-panel-border);
+  border-radius: 10px;
+  background: var(--system-panel);
+}
+
+#item_add_box h2 {
+  margin-bottom: 24px;
+  color: var(--system-text);
+}
+
+.add_row {
+  margin-bottom: 22px;
+}
+
+.add_row label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.add_row input,
+.add_row select {
+  width: 100%;
+  height: 50px;
+  padding: 0 16px;
+  border: 1px solid var(--system-input-border);
+  border-radius: 7px;
+  background: var(--system-input-bg);
+  color: var(--system-text);
+  font-size: 16px;
+}
+
+.btn_area {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 35px;
+}
+
+.save_btn,
+.cancel_btn {
+  width: 120px;
+  height: 46px;
+  border-radius: 7px;
+  color: #ffffff;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.save_btn {
+  border: none;
+  background: var(--system-blue);
+  font-weight: bold;
+}
+
+.cancel_btn {
+  border: 1px solid var(--system-input-border);
+  background: var(--system-input-bg);
+  color: var(--system-text);
+}
+
+.cancel_btn:hover {
+  background: var(--system-panel-light);
+}
+
+.error {
+  color: red;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* ============================== */
+
+/* 테이블 행 클릭 스타일 */
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.clickable-row:hover {
+  background-color: var(--system-panel-light);
+}
+
+/* 모달 전체 배경 오버레이 */
+.modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* 모달 윈도우 본체 */
+.modal_content {
+  background: var(--system-panel);
+  border: 1px solid var(--system-panel-border);
+  border-radius: 12px;
+  width: 850px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: modalFadeIn 0.25s ease;
+}
+
+.modal_header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--system-panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal_header h2 {
+  font-size: 24px;
+  color: var(--system-text);
+  margin: 0;
+}
+.close_x_btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--system-sub-text);
+  cursor: pointer;
+}
+.close_x_btn:hover {
+  color: var(--system-text);
+}
+
+/* 내부 양분 구조 (좌/우) */
+.modal_body {
+  padding: 24px;
+  display: flex;
+  gap: 24px;
+}
+.modal_left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal_right {
+  flex: 1.8;
+}
+
+/* 이미지 및 안면인식 구역 */
+.profile-large {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--system-panel-border);
+  background: #000;
+  margin-bottom: 15px;
+}
+.face_box {
+  width: 100%;
+  padding: 16px;
+  background: var(--system-panel-light);
+  border-radius: 8px;
+  border: 1px dashed var(--system-blue);
+  text-align: center;
+}
+.face_box h3 {
+  font-size: 16px;
+  color: var(--system-blue);
+  margin-bottom: 6px;
+}
+.face_box p {
+  font-size: 12px;
+  color: var(--system-sub-text);
+  margin-bottom: 12px;
+}
+.face_box input[type="file"] {
+  font-size: 12px;
+  width: 100%;
+}
+
+/* 애니메이션 */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

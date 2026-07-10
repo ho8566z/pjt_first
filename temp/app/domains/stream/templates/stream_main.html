@@ -1,0 +1,28 @@
+<!-- prettier-ignore -->
+{% extends "includes/system_layout.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('stream.static', filename='css/stream_common.css') }}" />
+<link rel="stylesheet" href="{{ url_for('stream.static', filename='css/stream_main.css') }}" />
+{% endblock %}
+
+<!-- prettier-ignore -->
+{% block content %}
+<div class="title_area">
+  <div>
+    <h2>실시간 탐지</h2>
+    <p>보행자를 검색합니다.</p>
+  </div>
+
+  <div class="breadcrumb">🏠 〉 관제 〉 실시간</div>
+</div>
+
+<div class="camera-grid">
+  {% for id in camera_ids %}
+  <img src="{{ url_for('stream.video_feed', cam_id=id) }}" width="640" height="360" />
+  {% else %}
+  <div class="no-camera">등록된 실시간 카메라가 없습니다.</div>
+  {% endfor %}
+</div>
+</div>
+{% endblock %}
