@@ -19,10 +19,11 @@
 
 <div class="camera-grid">
   {% for id in camera_ids %}
-  <img src="{{ url_for('stream.video_feed', cam_id=id) }}" width="640" height="360" />
+  <div class="camera-item">
+    <img src="{{ url_for('stream.video_feed', cam_id=id) }}" />
+  </div>
   {% else %}
   <div class="no-camera">등록된 실시간 카메라가 없습니다.</div>
   {% endfor %}
-</div>
 </div>
 {% endblock %}

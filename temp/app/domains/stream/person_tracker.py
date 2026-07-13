@@ -7,7 +7,7 @@ from ultralytics.utils.checks import check_yaml
 from ultralytics.utils import IterableSimpleNamespace
 from ultralytics.trackers.bot_sort import BOTSORT
 from ultralytics.utils.plotting import Annotator, colors
-
+from cv2 import imwrite
 
 from app.domains.stream import face_profiler
 from app.domains.stream.camera import get_camera_coordinate
@@ -24,12 +24,11 @@ _model.overrides["imgsz"] = 640
 _model.overrides["verbose"] = False
 _model.overrides["classes"] = [0]
 
-# 아직 신원이 확정되지 않은 track에 대한 재시도 주기
 IDENTIFY_RETRY_INTERVAL = 1
-# 이미 신원이 확정된 track은 이 주기로만 재확인 (계속 재조회할 필요 없음)
 IDENTIFY_RECHECK_INTERVAL = 30
+LOGGING_INTERVAL = 10
 
-_executor = ThreadPoolExecutor(max_workers=3)
+_executor = ThreadPoolExecutor(max_workers=8)
 
 
 def get_or_create_tracker(camera_id):
@@ -84,7 +83,8 @@ def _async_identify(camera_id, track_id, person_img):
 
         if user_id != "":
             coord = get_camera_coordinate(camera_id)
-            create_event_data(coord[0], coord[1], user_id)
+            imwrite(f"app/static/img/event_img/{user_id}_{track_id}.jpg", person_img)
+            create_event_data(coord[0], coord[1], user_id, f"{user_id}_{track_id}.jpg")
 
     finally:
         cache = _tracker_caches.get(camera_id)

@@ -12,6 +12,7 @@ from app.domains.logger.logger_utils.log_request_filter import(
     get_log_filter_options)
 from app.domains.logger.logger_utils.event_notifier import (
     wait_new_log)
+from app.utils.json_manager import (load_json, EVENT_LOGS_FILE)
 
 
 event_log_bp = Blueprint(
@@ -109,6 +110,40 @@ def add_event_log():
     add_event(data)
 
     return {"result": "success"}, 201
+
+
+# ===========================================================
+# 이벤트 캡처 로그 추가하기
+# ===========================================================
+@event_log_bp.route("/detail/<event_id>")
+def event_capture_detail(event_id):
+
+    event_logs = load_json(EVENT_LOGS_FILE)
+    event_captures = load_json(EVENT_LOGS_FILE)
+
+    event = event_logs.get(event_id)
+
+    if event is None:
+        return jsonify({
+            "result": "fail",
+            "message": "존재하지 않는 이벤트입니다."
+        }), 404
+
+    capture = event_captures.get(event_id)
+
+    if capture is None:
+        return jsonify({
+            "result": "fail",
+            "message": "이미지가 없습니다."
+        }), 404
+    
+    return jsonify({
+        "result": "success",
+        "image": url_for(
+        "static",
+        filename = capture["IMG_ROOT"]
+        )
+    })
 
 
 # ===========================================================

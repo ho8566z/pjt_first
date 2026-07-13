@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsidian Shield - 계정 회원가입</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('main.static', filename='css/create_account.css') }}">
+</head>
+<body>
+
+    {% include "includes/header.html" %}
+
+<div class="main-container">
+  <div class="setup-card">
+    
+    <div class="top-icon">
+      <i class="fas fa-user-plus"></i> </div>
+    <div class="title-section">
+      <h2>회원 등록</h2>
+      <p>새로운 계정 정보를 입력하여 회원가입을 완료하세요.</p>
+    </div>
+
+    <form class="setup-form" method="post" action="/member/add">
+      
+      <div class="input-group">
+        <label><i class="fas fa-id-badge"></i> 아이디</label>
+        <div class="input-wrapper">
+          <input type="text" name="id" placeholder="아이디를 입력하세요" value="{{ member_data.id if member_data else '' }}" />
+        </div>
+        {% if error_field == "id" %}
+        <div class="message-box" style="text-align: left; margin-top: 5px; margin-bottom: 0;">
+          <p style="color: #e53e3e; font-size: 0.8rem;">{{ error_message }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-lock"></i> 비밀번호</label>
+        <div class="input-wrapper">
+          <input type="password" name="pw" placeholder="비밀번호를 입력하세요" />
+        </div>
+        {% if error_field == "pw" %}
+        <div class="message-box" style="text-align: left; margin-top: 5px; margin-bottom: 0;">
+          <p style="color: #e53e3e; font-size: 0.8rem;">{{ error_message }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-user"></i> 이름</label>
+        <div class="input-wrapper">
+          <input type="text" name="name" placeholder="이름을 입력하세요" />
+        </div>
+      </div>
+
+      <div class="add_row">
+        <label><i class="fas fa-mobile-alt"></i> 전화번호</label>
+        
+        <div class="phone-container">
+          <input type="text" name="phone1" placeholder="010" maxlength="3" value="{{ member_data.phone1 if member_data else '' }}">
+          <span class="separator">-</span>
+          <input type="text" name="phone2" placeholder="1234" maxlength="4" value="{{ member_data.phone2 if member_data else '' }}">
+          <span class="separator">-</span>
+          <input type="text" name="phone3" placeholder="5678" maxlength="4" value="{{ member_data.phone3 if member_data else '' }}">
+        </div>
+
+        {% if error_field == "phone" %}
+            <p class="error">{{ error_message }}</p>
+        {% endif %}
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-envelope"></i> 이메일</label>
+        <div class="input-wrapper">
+          <input type="text" name="email" placeholder="example@email.com" value="{{ member_data.email if member_data else '' }}" />
+        </div>
+        {% if error_field == "email" %}
+        <div class="message-box" style="text-align: left; margin-top: 5px; margin-bottom: 0;">
+          <p style="color: #e53e3e; font-size: 0.8rem;">{{ error_message }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="btn_area" style="display: flex; gap: 12px; margin-top: 30px;">
+        <button class="submit-btn" type="submit" style="flex: 2;">등록</button>
+        <a class="submit-btn" href="/" style="flex: 1; background-color: #718096; text-decoration: none; text-align: center;">취소</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+</body>
+</html>

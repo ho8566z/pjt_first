@@ -18,24 +18,19 @@
                 <td>{{ account.NAME }}</td>
 
                 {% if edit_id == account.ID %}
-
                     <td>
                         <form id="update_form_{{ account.ID }}" method="post" action="/member/update/{{ account.ID }}"></form>
 
                         <select name="permission" form="update_form_{{ account.ID }}">
                             
                             <option value="ADMIN"
-                            {% if "ADMIN" in account.PERMISSIONS %}
-                                selected
-                            {% endif %}>
+                                {% if account.PERMISSION_NAME == "관리자" %}selected{% endif %}>
                                 관리자
                             </option>
 
 
                             <option value="OBSERVER"
-                            {% if "OBSERVER" in account.PERMISSIONS %}
-                                selected
-                            {% endif %}>
+                                {% if account.PERMISSION_NAME == "관제자" %}selected{% endif %}>
                                 관제자
                             </option>
 
@@ -48,7 +43,7 @@
                             <option value="미승인" {% if not account.IS_APPROVE %}selected{% endif %}>미승인</option>
                         </select>
                     </td>
-
+                    
                     <td>{{ account.REG_DATE }}</td>
 
                     <td class="actions">
@@ -58,7 +53,6 @@
 
                 {% else %}
                     <td>{{ account.PERMISSION_NAME }}</td>
-
                     <td>
                         {% if account.IS_APPROVE %}
                             <span class="badge approve">승인</span>

@@ -1,6 +1,14 @@
 import time
 
-from flask import Blueprint, Response, render_template, request, redirect, url_for
+from flask import (
+    Blueprint,
+    Response,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+)
 from app.domains.stream import profile_service
 from cv2 import imencode
 
@@ -35,9 +43,14 @@ def camera():
             src_type = request.form.get("src_type", "video")  # 기본값은 video
 
             if cam_id and src_path:
-                camera_manager.add_camera(
+                success = camera_manager.add_camera(
                     src_path=src_path, id=cam_id, src_type=src_type
                 )
+
+                if not success:
+                    flash(
+                        "이미 존재하는 고유 ID입니다. 다른 ID를 입력해주세요.", "error"
+                    )
 
         elif action == "delete":
             cam_id = request.form.get("cam_id")
@@ -63,9 +76,12 @@ def profile():
         action = request.form.get("action")
 
         if action == "add":
-            profile_service.handle_add_profile(
+            success = profile_service.handle_add_profile(
                 request.form, request.files, stream_bp.static_folder
             )
+
+            if not success:
+                flash("이미 존재하는 고유 ID입니다. 다른 ID를 입력해주세요.", "error")
 
         elif action == "update":
             profile_service.handle_update_profile(
@@ -76,7 +92,7 @@ def profile():
             profile_service.handle_face_encode(request.form, request.files)
 
         elif action == "delete":
-            profile_service.handle_delete_profile(request.form)
+            profile_service.handle_delete_profile(request.form, stream_bp.static_folder)
 
         return redirect(url_for("stream.profile"))
 
@@ -84,12 +100,17 @@ def profile():
         profile_service.get_paginated_profiles(request.args)
     )
 
+    search_keyword = request.args.get("search_keyword")
+
     return render_template(
         "profile_main.html",
         profiles=profiles_paginated,
         page=page,
         per_page=per_page,
         total_pages=total_pages,
+        search_tag=request.args.get("search_tag"),
+        search_keyword=search_keyword if search_keyword else "",
+        sort_order=request.args.get("sort_order"),
     )
 
 

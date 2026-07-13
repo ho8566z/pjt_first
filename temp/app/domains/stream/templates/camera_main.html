@@ -4,6 +4,7 @@
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('stream.static', filename='css/stream_common.css') }}" />
 <link rel="stylesheet" href="{{ url_for('stream.static', filename='css/camera_main.css') }}" />
+<link rel="stylesheet" href="{{ url_for('stream.static', filename='css/toast.css') }}" />
 {% endblock %}
 
 <!-- prettier-ignore -->
@@ -80,5 +81,24 @@
       </tbody>
     </table>
   </div>
+
+  <div id="toast_message" class="toast_alert" style="display: none">
+    <span id="toast_text"></span>
+  </div>
 </div>
-{% endblock %}
+
+{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
+<script>
+  window.addEventListener("DOMContentLoaded", (event) => {
+    const toast = document.getElementById("toast_message");
+    const toastText = document.getElementById("toast_text");
+    toastText.innerText = "{{ message }}";
+    toast.style.display = "block";
+
+    // 3초 뒤에 자동으로 사라지게 설정
+    setTimeout(() => {
+      toast.style.display = "none";
+    }, 3000);
+  });
+</script>
+{% endfor %} {% endif %} {% endwith %} {% endblock %}

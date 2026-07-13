@@ -55,6 +55,8 @@
    선택 읽음 처리 버튼에 커서있을 때
 =========================== */
 .btn_read:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
     background: #157347;
 }
 
@@ -63,6 +65,7 @@
 =========================== */
 .btn_read:active {
     transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
 
 /* ===========================

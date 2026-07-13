@@ -28,7 +28,11 @@
             </td>
 
             <td>{{ (page - 1) * per_page + loop.index }}</td>
-            <td class="event_id">{{ event.ID }}</td>
+            <td class="event_id">
+                <a href="#" class="capture_btn" data-event-id="{{event.ID }}">
+                    {{event.ID }}
+                </a>
+            </td>
             <td>{{ event.REG_DATE }}</td>
             <td>{{ event.latitude }}</td>
             <td>{{ event.longitude }}</td>

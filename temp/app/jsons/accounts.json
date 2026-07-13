@@ -2,166 +2,21 @@
   "admin": {
     "ID": "admin",
     "PW": "12341234@",
-    "NAME": "정호띠",
+    "NAME": "admin",
     "PHONE": "01011112222",
     "EMAIL": "admin@obsidian.com",
     "PERMISSIONS": [
       100,
       101,
       102,
+      103,
       200,
       300,
-      400,
-      401
+      301
     ],
     "IS_APPROVE": true,
     "IS_FIRST_LOGIN": false,
     "REG_DATE": "2026/06/01, 09:00:00",
-    "MOD_DATE": "2026/07/06, 16:15:53"
-  },
-  "hongsu1234": {
-    "ID": "hongsu1234",
-    "PW": "qwer1234@",
-    "NAME": "이홍수",
-    "PHONE": "01012341234",
-    "EMAIL": "hongsu@naver.com",
-    "PERMISSIONS": [
-      100,
-      101,
-      102,
-      103,
-      200,
-      300,
-      301
-    ],
-    "IS_APPROVE": false,
-    "IS_FIRST_LOGIN": false,
-    "REG_DATE": "2026/07/08, 12:04:10",
-    "MOD_DATE": "2026/07/09, 14:31:08"
-  },
-  "parkjunho1234": {
-    "ID": "parkjunho1234",
-    "PW": "qwer1234@@",
-    "NAME": "박준호",
-    "PHONE": "01011112222",
-    "EMAIL": "park1234@naver.com",
-    "PERMISSIONS": [
-      100,
-      101,
-      102,
-      103,
-      200,
-      300,
-      301
-    ],
-    "IS_APPROVE": false,
-    "IS_FIRST_LOGIN": false,
-    "REG_DATE": "2026/07/08, 12:22:00",
-    "MOD_DATE": "2026/07/09, 18:30:48"
-  },
-  "nayoug1234": {
-    "ID": "nayoug1234",
-    "PW": "12341234@",
-    "NAME": "이나영",
-    "PHONE": "01011221234",
-    "EMAIL": "nayoung@naver.com",
-    "PERMISSIONS": [
-      103,
-      300
-    ],
-    "IS_APPROVE": false,
-    "IS_FIRST_LOGIN": true,
-    "REG_DATE": "2026/07/09, 09:16:22",
-    "MOD_DATE": "2026/07/09, 09:16:22"
-  },
-  "ingyu12": {
-    "ID": "ingyu12",
-    "PW": "12341234@",
-    "NAME": "한인규",
-    "PHONE": "01022221111",
-    "EMAIL": "ingyou@naver.com",
-    "PERMISSIONS": [
-      103,
-      300
-    ],
-    "IS_APPROVE": false,
-    "IS_FIRST_LOGIN": true,
-    "REG_DATE": "2026/07/09, 09:16:57",
-    "MOD_DATE": "2026/07/09, 09:16:57"
-  },
-  "hwanhe1234": {
-    "ID": "hwanhe1234",
-    "PW": "12341234@",
-    "NAME": "송환이",
-    "PHONE": "01012311234",
-    "EMAIL": "hwan1234@naver.com",
-    "PERMISSIONS": [
-      103,
-      300
-    ],
-    "IS_APPROVE": false,
-    "IS_FIRST_LOGIN": true,
-    "REG_DATE": "2026/07/09, 09:17:28",
-    "MOD_DATE": "2026/07/09, 09:17:28"
-  },
-  "leejun1234": {
-    "ID": "leejun1234",
-    "PW": "12341234@",
-    "NAME": "이준",
-    "PHONE": "01012311232",
-    "EMAIL": "jon2482@naver.com",
-    "PERMISSIONS": [
-      103,
-      300
-    ],
-    "IS_APPROVE": false,
-    "IS_FIRST_LOGIN": true,
-    "REG_DATE": "2026/07/09, 09:18:22",
-    "MOD_DATE": "2026/07/09, 09:18:22"
-  },
-  "jun1111": {
-    "ID": "jun1111",
-    "PW": "12341234@",
-    "NAME": "최준희",
-    "PHONE": "01012341244",
-    "EMAIL": "hee1234@naver.com",
-    "PERMISSIONS": [
-      103,
-      300
-    ],
-    "IS_APPROVE": false,
-    "IS_FIRST_LOGIN": true,
-    "REG_DATE": "2026/07/09, 09:19:06",
-    "MOD_DATE": "2026/07/09, 09:19:06"
-  },
-  "heejun1234": {
-    "ID": "heejun1234",
-    "PW": "12341234@",
-    "NAME": "김희준",
-    "PHONE": "01032143215",
-    "EMAIL": "12313@naver.com",
-    "PERMISSIONS": [
-      103,
-      300
-    ],
-    "IS_APPROVE": false,
-    "IS_FIRST_LOGIN": true,
-    "REG_DATE": "2026/07/09, 09:20:01",
-    "MOD_DATE": "2026/07/09, 09:20:01"
-  },
-  "park123": {
-    "ID": "park123",
-    "PW": "12341234@",
-    "NAME": "박원식",
-    "PHONE": "01045655785",
-    "EMAIL": "parkjun@naver.com",
-    "PERMISSIONS": [
-      103,
-      300
-    ],
-    "IS_APPROVE": false,
-    "IS_FIRST_LOGIN": true,
-    "REG_DATE": "2026/07/09, 09:21:01",
-    "MOD_DATE": "2026/07/09, 09:21:01"
+    "MOD_DATE": "2026/07/13, 14:16:48"
   }
 }

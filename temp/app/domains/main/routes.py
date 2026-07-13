@@ -70,11 +70,11 @@ def login_result():
             return render_template("pending.html")
 
         # 최초 로그인 (비밀번호 변경 필요)
-        if user[configs.KEY_IS_FIRST_LOGIN]:
-            return render_template("first_login_form.html")
+        # if user[configs.KEY_IS_FIRST_LOGIN]:
+        #     return render_template("first_login_form.html")
 
         # 일반 로그인 성공 → 목록 이동
-        return redirect(url_for("stream.camera"))
+        return redirect(url_for("stream.monitoring"))
 
     # =========================
     # 로그인 실패 처리
@@ -95,9 +95,16 @@ def login_result():
     return render_template("main_index.html", message=message, success=False)
 
 
+# ==========================================================
+# 로그아웃 처리
+# ==========================================================
 @main_bp.route("/signout_confirm", methods=["GET"])
 def signout_confirm():
+
+    # 세션 삭제
     session.clear()
+
+    # 메인으로 이동
     return redirect(url_for("main.main"))
 
 
@@ -127,3 +134,6 @@ def first_login_form():
     return render_template("first_login_form.html", message=message, success=False)
 
 
+@main_bp.route("/createaccount", methods=["GET", "POST"])
+def create_account():
+    return render_template("create_account.html")

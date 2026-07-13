@@ -1,0 +1,230 @@
+/* ========================================================
+   [Obsidian Shield] 회원가입(회원 등록) 전용 완전 독립 CSS 
+   ======================================================== */
+
+/* 1. 기본 스타일 리셋 및 다른 파일 간섭 방어 */
+.main-container *, 
+.main-container *::before, 
+.main-container *::after {
+    box-sizing: border-box ;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. 전체 레이아웃 (헤더 아래에서 무조건 가로/세로 중앙 정렬) */
+.main-container {
+    width: 100% ;
+    min-height: calc(100vh - 80px) ;
+    display: flex ;
+    justify-content: center ;
+    align-items: center ;
+    padding: 50px 20px ;
+    background: radial-gradient(circle at 55% 40%, rgba(255, 255, 255, 0.95), rgba(248, 251, 255, 0.86) 43%, rgba(238, 243, 249, 0.78) 72%), linear-gradient(120deg, #ffffff, #eef3f9) ;
+}
+
+/* 3. 중앙 회원등록 카드 프레임 */
+.setup-card {
+    background: #ffffff ;
+    width: 100% ;
+    max-width: 500px ;
+    border-radius: 24px ;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.02) ;
+    padding: 40px ;
+    display: flex ;
+    flex-direction: column ;
+    align-items: center ;
+}
+
+/* 4. 상단 아이콘 및 타이틀 */
+.top-icon {
+    width: 60px ;
+    height: 60px ;
+    background-color: #06152d ;
+    color: #ffffff ;
+    border-radius: 50% ;
+    display: flex ;
+    justify-content: center ;
+    align-items: center ;
+    font-size: 1.5rem ;
+    margin-bottom: 20px ;
+    box-shadow: 0 4px 10px rgba(6, 21, 45, 0.2) ;
+}
+
+.title-section {
+    text-align: center ;
+    margin-bottom: 35px ;
+    width: 100% ;
+}
+
+.title-section h2 {
+    font-size: 1.6rem ;
+    color: #1a202c ;
+    font-weight: 700 ;
+    margin-bottom: 8px ;
+}
+
+.title-section p {
+    font-size: 0.9rem ;
+    color: #718096 ;
+}
+
+/* 5. 공통 폼 및 일반 입력란 스타일 정의 */
+.setup-form {
+    width: 100% ;
+}
+
+.input-group {
+    margin-bottom: 22px ;
+    width: 100% ;
+    text-align: left ;
+}
+
+.input-group label {
+    display: block ;
+    font-size: 0.85rem ;
+    font-weight: 600 ;
+    color: #2d3748 ;
+    margin-bottom: 8px ;
+    text-align: left ;
+}
+
+.input-group label i {
+    margin-right: 6px ;
+    color: #4a5568 ;
+}
+
+.input-wrapper {
+    position: relative ;
+    width: 100% ;
+    display: block ;
+}
+
+.input-wrapper input {
+    width: 100% ;
+    display: block ;
+    height: 50px ;
+    padding: 0 16px ;
+    border: 1px solid #e2e8f0 ;
+    border-radius: 12px ;
+    font-size: 0.95rem ;
+    color: #1a202c ;
+    background-color: #f8fafc ;
+    outline: none ;
+    transition: all 0.2s ease-in-out ;
+}
+
+.input-wrapper input:focus {
+    border-color: #06152d ;
+    background-color: #ffffff ;
+    box-shadow: 0 0 0 3px rgba(6, 21, 45, 0.1) ;
+}
+
+.input-wrapper input::placeholder {
+    color: #a0aec0 ;
+}
+
+/* 6. [NEW] 전화번호 구역 (.add_row) 전용 서식 정의 */
+.add_row {
+    margin-bottom: 22px ;
+    width: 100% ;
+    text-align: left ;
+    display: flex ;
+    flex-direction: column ;
+}
+
+/* 다른 라벨들과 일관성 부여 */
+.add_row label {
+    display: block ;
+    font-size: 0.85rem ;
+    font-weight: 600 ;
+    color: #2d3748 ;
+    margin-bottom: 8px ;
+}
+
+/* 3분할 인풋과 하이픈(-)을 부드럽게 한 줄로 정렬 */
+.add_row .phone-container {
+    display: flex ;
+    align-items: center ;
+    gap: 8px ;
+    width: 100% ;
+}
+
+.add_row input {
+    width: 0; /* 💡 기본 고유 너비를 없애서 flex 비율이 깨지지 않게 방어합니다. */
+    height: 50px ;
+    text-align: center ;
+    border: 1px solid #e2e8f0 ;
+    border-radius: 12px ;
+    font-size: 0.95rem ;
+    color: #1a202c ;
+    background-color: #f8fafc ;
+    outline: none ;
+    transition: all 0.2s ease-in-out ;
+}
+
+/* 첫 번째 칸(010)과 나머지 칸 비율 밸런스 조정 */
+.add_row input[name="phone1"] { flex: 1 ; }
+.add_row input[name="phone2"] { flex: 1.5 ; }
+.add_row input[name="phone3"] { flex: 1.5 ; }
+
+.add_row input:focus {
+    border-color: #06152d ;
+    background-color: #ffffff ;
+    box-shadow: 0 0 0 3px rgba(6, 21, 45, 0.1) ;
+}
+
+.add_row .separator {
+    color: #a0aec0 ;
+    font-weight: 500 ;
+}
+
+/* 7. 하단 버튼 구역 스타일 */
+.btn_area {
+    display: flex ;
+    gap: 12px ;
+    margin-top: 35px ;
+    width: 100% ;
+}
+
+.submit-btn {
+    display: inline-flex ;
+    justify-content: center ;
+    align-items: center ;
+    height: 52px ;
+    border: none ;
+    border-radius: 12px ;
+    font-size: 1rem ;
+    font-weight: 600 ;
+    cursor: pointer ;
+    transition: background-color 0.2s ease ;
+}
+
+button.submit-btn {
+    background-color: #06152d ;
+    color: #ffffff ;
+}
+
+button.submit-btn:hover {
+    background-color: #0c2347 ;
+}
+
+a.submit-btn {
+    background-color: #718096 ;
+    color: #ffffff ;
+    text-decoration: none ;
+    text-align: center ;
+}
+
+a.submit-btn:hover {
+    background-color: #4a5568 ;
+}
+
+/* 8. 에러 메시지 서식 (일반 및 전화번호 에러 공통) */
+.message-box, 
+.add_row .error {
+    text-align: left ;
+    margin-top: 6px ;
+    width: 100% ;
+    color: #e53e3e ;
+    font-size: 0.8rem ;
+}

@@ -1,4 +1,19 @@
 /* ===========================
+   모드별 색상 변수 선언
+=========================== */
+:root {
+    --flash-start: #fef08a;
+    --flash-end: #ffffff;
+}
+
+html.dark .new_log, 
+body.dark .new_log,
+[data-theme="dark"] .new_log {
+        --flash-start: #58bddb;
+        --flash-end: #33538a;
+}
+
+/* ===========================
    Toast Container
 =========================== */
 #toast_container{
@@ -29,8 +44,8 @@
    새 로그 강조
 =========================== */
 .new_log{
-    background: #fff7b2;
-    animation: flash 3s ease;
+    background: var(--flash-end);
+    animation: flash 1.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ===========================
@@ -52,13 +67,11 @@
 /* ===========================
    새 로그 깜빡임
 =========================== */
-@keyframes flash{
-
-    0%{
-        background: #ffe766;
+@keyframes flash {
+    0% {
+        background: var(--flash-start);
     }
-
-    100%{
-        background: white;
+    100% {
+        background: var(--flash-end);
     }
 }

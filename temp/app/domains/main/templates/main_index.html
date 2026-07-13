@@ -11,8 +11,6 @@
     <link rel="stylesheet" href="{{ url_for('main.static', filename='css/main_index.css') }}" />
   </head>
 
-
-
   <body>
     <main class="main">
       {% include "includes/header.html" %}
@@ -25,7 +23,6 @@
           </div>
 
           <form id="loginForm" class="login-card" action="/login" method="POST">
-
             <div class="input-box">
               <span class="icon">👤</span>
               <strong>ID</strong>
@@ -38,21 +35,16 @@
               <input type="password" name="uPw" placeholder="비밀번호를 입력하세요" />
             </div>
 
-            
-            {% include "includes/message_box.html" %}
-         
-            {% include "includes/captcha_box.html" %}
+            {% include "includes/message_box.html" %} {% include "includes/captcha_box.html" %}
 
             <button type="button" onclick="login()">로그인</button>
-
+            <button type="button" onclick="location.href = '/createaccount'">회원가입</button>
           </form>
         </div>
       </section>
     </main>
 
     {% include "includes/footer.html" %}
-
- 
 
     <script>
       function login() {
@@ -66,7 +58,5 @@
         form.submit();
       }
     </script>
-
-    
   </body>
 </html>

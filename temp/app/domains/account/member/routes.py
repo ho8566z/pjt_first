@@ -1,7 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from app.utils.account_manager import load_accounts, save_accounts
 from .service import make_member, update_member, delete_member, is_admin
-from .request_data import get_member_list_options, get_member_add_data, get_member_update_data
+from .request_data import (
+    get_member_list_options,
+    get_member_add_data,
+    get_member_update_data,
+)
 from app.utils.member_filter import filter_keyword, filter_permission, filter_approve
 from app.utils.member_sort import sort_accounts
 from app.utils.pagination import paginate
@@ -19,7 +23,7 @@ member_bp = Blueprint(
     __name__,
     template_folder="templates",
     static_folder="static",
-    static_url_path="/member/static"
+    static_url_path="/member/static",
 )
 
 
@@ -37,10 +41,7 @@ def member_update(member_id):
 
     # 권한 및 승인 상태 수정
     success, message = update_member(
-        account_db,
-        member_id,
-        member_data["permission"],
-        member_data["approve"]
+        account_db, member_id, member_data["permission"], member_data["approve"]
     )
 
     # 수정 실패
@@ -77,7 +78,6 @@ def member_list():
 
     # 권한명을 화면에 표시하기 위한 데이터 추가
     for account in accounts:
-
         permissions = account[configs.KEY_PERMISSIONS]
 
         if PERMISSON.MEMBER_ACCESS.value in permissions:
@@ -89,34 +89,17 @@ def member_list():
     options = get_member_list_options(request)
 
     # 검색
-    accounts = filter_keyword(
-        accounts,
-        options["keyword"],
-        options["tag"]
-    )
+    accounts = filter_keyword(accounts, options["keyword"], options["tag"])
 
-    accounts = filter_permission(
-        accounts,
-        options["permission"]
-    )
+    accounts = filter_permission(accounts, options["permission"])
 
-    accounts = filter_approve(
-        accounts,
-        options["approve"]
-    )
+    accounts = filter_approve(accounts, options["approve"])
 
     # 정렬
-    accounts = sort_accounts(
-        accounts,
-        options["sort"]
-    )
+    accounts = sort_accounts(accounts, options["sort"])
 
     # 페이지네이션
-    accounts, total_pages = paginate(
-        accounts,
-        options["page"],
-        options["per_page"]
-    )
+    accounts, total_pages = paginate(accounts, options["page"], options["per_page"])
 
     # 현재 로그인한 사용자 권한 표시
     if PERMISSON.MEMBER_ACCESS.value in session["permissions"]:
@@ -139,7 +122,7 @@ def member_list():
         page=options["page"],
         total_pages=total_pages,
         edit_id=options["edit_id"],
-        mode=options["mode"]
+        mode=options["mode"],
     )
 
 
@@ -153,13 +136,13 @@ def member_add():
     account_db = load_accounts()
 
     # 관리자 권한 확인
-    if not is_admin(session["id"]):
-        return """
-        <script>
-        alert("권한이 없습니다.");
-        history.back();
-        </script>
-        """
+    # if not is_admin(session.get("id")):
+    #     return """
+    #     <script>
+    #     alert("권한이 없습니다.");
+    #     history.back();
+    #     </script>
+    #     """
 
     # 입력 데이터 가져오기
     member_data = get_member_add_data(request)
@@ -172,16 +155,16 @@ def member_add():
         member_data["email"],
         member_data["phone1"],
         member_data["phone2"],
-        member_data["phone3"]
+        member_data["phone3"],
     )
 
     # 검증 실패
     if not success:
         return render_template(
-            "member_list.html",
+            "create_account.html",
             error_field=field,
             error_message=message,
-            member_data=member_data
+            member_data=member_data,
         )
 
     # 전화번호 저장
@@ -194,7 +177,11 @@ def member_add():
     save_accounts(account_db)
 
     # 회원 목록 이동
-    return redirect("/member/list")
+    return render_template(
+        "main_index.html",
+        message="회원가입 요청이 완료되었습니다. 승인을 기다려주세요.",
+        success=True,
+    )
 
 
 # ==========================================================
@@ -216,10 +203,7 @@ def member_delete(member_id):
         """
 
     # 회원 삭제 및 삭제 ID 저장
-    result, message = delete_account(
-        account_db,
-        member_id
-    )
+    result, message = delete_account(account_db, member_id)
 
     # 삭제 성공
     if result:

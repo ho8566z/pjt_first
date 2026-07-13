@@ -2,9 +2,10 @@
   <nav>
     <!-- <a class="menu" href="# ">🖥️ 대시보드</a> -->
     <a class="menu" href="{{ url_for('stream.monitoring') }}">📡 실시간</a>
-    {% if 200 in session["permissions"] %}
     <a class="menu" href="{{ url_for('stream.profile')}}">👁️ 탐지 대상</a>
     <a class="menu" href="{{ url_for('stream.camera')}}">📷 카메라 관리</a>
+
+    {% if 200 in session["permissions"] %}
     <a class="menu" href="/member/list">👥 사용자 관리</a>
     {% endif %}
 

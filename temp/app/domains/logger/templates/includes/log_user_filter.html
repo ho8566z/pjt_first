@@ -16,7 +16,7 @@
             </option>
 
             <option value="이벤트ID" {% if tag=="이벤트ID" %}selected{% endif %}>
-                이벤트ID
+                이벤트 ID
             </option>
 
             <option value="확인자" {% if tag=="확인자" %}selected{% endif %}>
@@ -24,15 +24,15 @@
             </option>
 
             <option value="확인시간" {% if tag=="확인시간" %}selected{% endif %}>
-                확인시간
+                확인 시간
             </option>
         </select>
 
         <!-- 정렬 -->
         <label>정렬</label>
         <select name="sort">
-            <option value="최신순" {% if sort=="최신순" %}selected{% endif %}>
-                최신순
+            <option value="최신순" {% if sort=="최신등록순" %}selected{% endif %}>
+                최신등록순
             </option>
 
             <option value="오래된순" {% if sort=="오래된순" %}selected{% endif %}>
@@ -44,15 +44,19 @@
         <label>보기</label>
         <select name="per_page">
             <option value="10" {% if per_page==10 %}selected{% endif %}>
-                10개
+                10개씩 보기
             </option>
 
             <option value="20" {% if per_page==20 %}selected{% endif %}>
-                20개
+                20개씩 보기
+            </option>
+
+            <option value="30" {% if per_page==30 %}selected{% endif %}>
+                30개씩 보기
             </option>
 
             <option value="50" {% if per_page==50 %}selected{% endif %}>
-                50개
+                50개씩 보기
             </option>
         </select>
 
