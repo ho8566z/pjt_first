@@ -51,6 +51,11 @@ app/
 │           └── ding.wav
 │
 └── domains/
+      ├── main/
+      │     └── templates/
+      │         ├── dashboard.html
+      │         └── dashboard_content.html
+	  │
       └── logger/
             ├── templates/
             │   ├── log_list_event.html
