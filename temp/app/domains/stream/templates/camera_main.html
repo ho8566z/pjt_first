@@ -66,6 +66,19 @@
           <td>{{ '동영상' if cam.is_video else '실시간 스트림' }}</td>
           <td><code>{{ cam.src_path }}</code></td>
           <td>
+            {% if cam.is_paused %}
+            <form action="{{ url_for('stream.camera') }}" method="POST">
+              <input type="hidden" name="action" value="start" />
+              <input type="hidden" name="cam_id" value="{{ cam.id }}" />
+              <button type="submit" class="btn-delete">활성화</button>
+            </form>
+            {% else %}
+            <form action="{{ url_for('stream.camera') }}" method="POST">
+              <input type="hidden" name="action" value="stop" />
+              <input type="hidden" name="cam_id" value="{{ cam.id }}" />
+              <button type="submit" class="btn-delete">정지</button>
+            </form>
+            {% endif %}
             <form action="{{ url_for('stream.camera') }}" method="POST" onsubmit="return confirm('정말 삭제하시겠습니까?');">
               <input type="hidden" name="action" value="delete" />
               <input type="hidden" name="cam_id" value="{{ cam.id }}" />

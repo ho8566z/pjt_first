@@ -5,15 +5,7 @@
     "NAME": "admin",
     "PHONE": "01011112222",
     "EMAIL": "admin@obsidian.com",
-    "PERMISSIONS": [
-      100,
-      101,
-      102,
-      103,
-      200,
-      300,
-      301
-    ],
+    "PERMISSIONS": [100, 101, 102, 103, 200, 300, 301],
     "IS_APPROVE": true,
     "IS_FIRST_LOGIN": false,
     "REG_DATE": "2026/06/01, 09:00:00",

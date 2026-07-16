@@ -26,7 +26,7 @@ _model.overrides["classes"] = [0]
 
 IDENTIFY_RETRY_INTERVAL = 1
 IDENTIFY_RECHECK_INTERVAL = 30
-LOGGING_INTERVAL = 10
+LOGGING_INTERVAL = 15
 
 _executor = ThreadPoolExecutor(max_workers=8)
 
@@ -81,11 +81,6 @@ def _async_identify(camera_id, track_id, person_img):
         cache[track_id]["user_id"] = user_id
         cache[track_id]["match_ratio"] = match_ratio
 
-        if user_id != "":
-            coord = get_camera_coordinate(camera_id)
-            imwrite(f"app/static/img/event_img/{user_id}_{track_id}.jpg", person_img)
-            create_event_data(coord[0], coord[1], user_id, f"{user_id}_{track_id}.jpg")
-
     finally:
         cache = _tracker_caches.get(camera_id)
         if cache is not None and track_id in cache:
@@ -130,6 +125,7 @@ def track_identified(frames: list, camera_ids) -> list:
                     "user_id": "",
                     "match_ratio": -1.0,
                     "last_requested": 0.0,
+                    "last_logging": 0.0,
                     "in_flight": False,
                 }
 
@@ -160,6 +156,19 @@ def track_identified(frames: list, camera_ids) -> list:
             if user_cache["user_id"] != "":
                 label = f"{user_cache['user_id']} ({user_cache['match_ratio']:.2f})"
                 annotator.box_label(box, label, color=colors(track_id, True))
+
+                if current_time - user_cache["last_logging"] > LOGGING_INTERVAL:
+                    user_id = user_cache["user_id"]
+                    coord = get_camera_coordinate(camera_id)
+                    imwrite(
+                        f"app/static/img/event_img/{user_id}_{track_id}.jpg",
+                        annotated_frame,
+                    )
+                    create_event_data(
+                        coord[0], coord[1], user_id, f"{user_id}_{track_id}.jpg"
+                    )
+
+                    user_cache["last_logging"] = current_time
 
         # dead track_id 캐시 정리 (메모리 누수 방지)
         for tid in tuple(cache.keys()):

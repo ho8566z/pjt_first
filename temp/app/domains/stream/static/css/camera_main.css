@@ -109,3 +109,30 @@ select {
   color: var(--system-muted-text);
   padding: 30px 0;
 }
+
+/* 관리 열 내부의 폼들을 한 줄로 정렬 */
+.cam-table td {
+  vertical-align: middle; /* 버튼과 텍스트의 세로 중앙 정렬 */
+}
+
+.cam-table td form {
+  display: inline-block;  /* 폼 요소들을 한 줄로 배치 */
+  margin-right: 6px;      /* 버튼 사이의 간격 격자 지정 */
+}
+
+.cam-table td form:last-child {
+  margin-right: 0;        /* 마지막 버튼은 오른쪽 여백 제거 */
+}
+
+/* 정지/활성화 버튼 색상 변경 예시 (CSS만으로 처리할 때) */
+.cam-table td form:first-child .btn-delete {
+  background: var(--system-blue); /* 시스템 블루 혹은 회색 계열 추천 */
+}
+.cam-table td form:first-child .btn-delete:hover {
+  background: var(--system-blue-light);
+}
+
+/* 실제 삭제 버튼은 그대로 빨간색 유지 */
+.cam-table td form:last-child .btn-delete {
+  background: #e53e3e;
+}

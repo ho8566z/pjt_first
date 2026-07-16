@@ -1,0 +1,246 @@
+<section class="dashboard_page">
+  <div class="dashboard_heading">
+    <div>
+      <p class="dashboard_eyebrow">CONTROL CENTER</p>
+      <h2>대시보드</h2>
+      <p class="dashboard_description">관제 시스템의 탐지 현황과 주요 정보를 한눈에 확인합니다.</p>
+    </div>
+  </div>
+
+  <div class="summary_grid">
+    <a class="summary_card" href="{{ url_for('stream.profile') }}">
+      <div class="summary_icon icon_target">◎</div>
+      <div class="summary_text">
+        <span>등록 탐지 대상</span>
+        <strong>{{ stats.target_count }}</strong>
+        <small>탐지 대상 관리로 이동</small>
+      </div>
+      <span class="summary_arrow">›</span>
+    </a>
+
+    <a class="summary_card summary_card_alert" href="{{ url_for('event_log.event_list', status='읽지않음') }}">
+      <div class="summary_icon icon_alert">!</div>
+      <div class="summary_text">
+        <span>미확인 이벤트</span>
+        <strong>{{ stats.unread_event_count }}</strong>
+        <small>확인이 필요한 이벤트</small>
+      </div>
+      <span class="summary_arrow">›</span>
+    </a>
+
+    {% if 200 in session.get("permissions", []) %}
+    <a class="summary_card" href="{{ url_for('member.member_list') }}">
+      <div class="summary_icon icon_user">♙</div>
+      <div class="summary_text">
+        <span>승인 사용자</span>
+        <strong>{{ stats.approved_user_count }}</strong>
+        <small>승인 대기 {{ stats.pending_user_count }}명</small>
+      </div>
+      <span class="summary_arrow">›</span>
+    </a>
+    {% else %}
+    <div class="summary_card">
+      <div class="summary_icon icon_user">♙</div>
+      <div class="summary_text">
+        <span>시스템 사용자</span>
+        <strong>{{ stats.user_count }}</strong>
+        <small>승인 계정 기준</small>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="live_monitor_grid">
+    <section class="dashboard_panel live_monitor_panel">
+      <div class="panel_header live_panel_header">
+        <div>
+          <span class="panel_label">LIVE MONITORING</span>
+          <h3>실시간 관제 화면</h3>
+        </div>
+        <div class="live_header_actions">
+          <span class="camera_count_badge">카메라 {{ camera_count }}대</span>
+          <a href="{{ url_for('stream.monitoring') }}">전체 화면 보기</a>
+        </div>
+      </div>
+
+      <div class="live_view {% if primary_camera_id is none %}is_empty{% endif %}">
+        {% if primary_camera_id is not none %}
+        <img class="live_stream_image" src="{{ url_for('stream.video_feed', cam_id=primary_camera_id) }}" alt="카메라 {{ primary_camera_id }} 실시간 영상" />
+
+        <div class="live_overlay live_overlay_top">
+          <span class="recording_badge"><i></i> LIVE</span>
+          <span>CAM {{ primary_camera_id }}</span>
+        </div>
+
+        <div class="live_overlay live_overlay_bottom">
+          <span><i class="analysis_dot"></i> 실시간 분석 중</span>
+          <span>{{ generated_at }}</span>
+        </div>
+        {% else %}
+        <div class="live_scan_grid" aria-hidden="true"></div>
+        <div class="live_empty_content">
+          <div class="radar_icon">
+            <span></span>
+            <i></i>
+          </div>
+          <strong>연결된 실시간 카메라가 없습니다.</strong>
+          <p>카메라 관리에서 영상 파일, 웹캠 또는 스트림 주소를 등록하면 이곳에 자동으로 표시됩니다.</p>
+          <a href="{{ url_for('stream.camera') }}">카메라 연결하기</a>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if camera_ids|length > 1 %}
+      <div class="camera_channel_list">
+        {% for camera_id in camera_ids %}
+        <a class="{% if camera_id == primary_camera_id %}is_active{% endif %}" href="{{ url_for('main.dashboard', camera_id=camera_id) }}">CAM {{ camera_id }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </section>
+
+    <aside class="dashboard_panel live_status_panel">
+      <div class="panel_header">
+        <div>
+          <span class="panel_label">MONITOR STATUS</span>
+          <h3>관제 상태</h3>
+        </div>
+      </div>
+
+      <div class="monitor_status_list">
+        <div class="monitor_status_item">
+          <span class="status_icon camera_status_icon">📹</span>
+          <div>
+            <small>카메라 연결</small>
+            <strong>{{ camera_count }}대 활성</strong>
+          </div>
+          <span class="system_state {% if camera_count > 0 %}is_online{% else %}is_standby{% endif %}"> {% if camera_count > 0 %}ONLINE{% else %}STANDBY{% endif %} </span>
+        </div>
+
+        <div class="monitor_status_item">
+          <span class="status_icon alert_status_icon">!</span>
+          <div>
+            <small>미확인 경보</small>
+            <strong>{{ stats.unread_event_count }}건</strong>
+          </div>
+          <a class="status_detail_link" href="{{ url_for('event_log.event_list', status='읽지않음') }}">확인</a>
+        </div>
+      </div>
+
+      <div class="latest_detection_box">
+        <div class="latest_detection_title">
+          <span>최근 탐지</span>
+          <a href="{{ url_for('event_log.event_list') }}">로그 보기</a>
+        </div>
+
+        {% if recent_events %} {% set latest_event = recent_events[0] %}
+        <div class="latest_detection_content">
+          <div class="latest_detection_image">
+            {% if latest_event.image %}
+            <img src="{{ url_for('static', filename=latest_event.image) }}" alt="{{ latest_event.target_name }}" />
+            {% else %}
+            <span>👤</span>
+            {% endif %}
+          </div>
+          <div>
+            <strong>{{ latest_event.target_name }}</strong>
+            <span>{{ latest_event.short_description }}</span>
+            <small>{{ latest_event.date }}</small>
+          </div>
+        </div>
+        {% else %}
+        <div class="latest_detection_empty">현재 탐지된 대상이 없습니다.</div>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+
+  <div class="dashboard_main_grid">
+    <section class="dashboard_panel dashboard_map_panel">
+      <div class="panel_header">
+        <div>
+          <span class="panel_label">DETECTION MAP</span>
+          <h3>탐지 지도</h3>
+        </div>
+        <div class="map_view_controls">
+          <button type="button" class="map_view_btn is_active" data-dashboard-map-view="all" aria-pressed="true">전체 보기</button>
+          <button type="button" class="map_view_btn" data-dashboard-map-view="recent" aria-pressed="false">최근 1인 보기</button>
+          <a href="{{ url_for('map.map_page') }}">전체 지도 보기</a>
+        </div>
+      </div>
+
+      <div class="dashboard_map_wrap">
+        <div id="dashboardMap" class="dashboard_map_canvas"></div>
+
+        {% if not map_data %}
+        <div class="dashboard_map_empty">
+          <span>🗺️</span>
+          <strong>표시할 탐지 위치가 없습니다.</strong>
+          <small>탐지 이벤트가 발생하면 지도에 위치가 표시됩니다.</small>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="dashboard_panel recent_panel">
+      <div class="panel_header">
+        <div>
+          <span class="panel_label">RECENT DETECTIONS</span>
+          <h3>최근 탐지 이벤트</h3>
+        </div>
+        <a href="{{ url_for('event_log.event_list') }}">전체 이벤트 보기</a>
+      </div>
+
+      {% if recent_events %}
+      <div class="recent_event_list">
+        <div class="recent_event_header" aria-hidden="true">
+          <span>대상</span>
+          <span>탐지 사유</span>
+          <span>발생 시간</span>
+          <span>위치</span>
+          <span>상태</span>
+          <span>작업</span>
+        </div>
+
+        {% for event in recent_events %}
+        <article class="recent_event_row">
+          <div class="recent_event_target" data-label="대상">
+            <div class="target_thumbnail">
+              {% if event.image %}
+              <img src="{{ url_for('static', filename=event.image) }}" alt="{{ event.target_name }} 탐지 이미지" />
+              {% else %}
+              <span>👤</span>
+              {% endif %}
+            </div>
+            <div>
+              <strong>{{ event.target_name }}</strong>
+              <small>{{ event.target_id }}</small>
+            </div>
+          </div>
+
+          <div class="recent_event_value" data-label="탐지 사유">{{ event.short_description }}</div>
+          <div class="recent_event_value recent_event_date" data-label="발생 시간">{{ event.date }}</div>
+          <div class="recent_event_value location_text" data-label="위치">{{ event.location }}</div>
+          <div class="recent_event_value" data-label="상태">
+            {% if event.is_read %}
+            <span class="status_badge status_checked">확인</span>
+            {% else %}
+            <span class="status_badge status_new">미확인</span>
+            {% endif %}
+          </div>
+          <div class="recent_event_value recent_event_action" data-label="작업">
+            <a class="row_link" href="{{ url_for('map.map_page', target_id=event.target_id) }}">지도 보기</a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty_state">
+        <div>⌁</div>
+        <strong>등록된 탐지 이벤트가 없습니다.</strong>
+        <p>새 이벤트가 발생하면 이 영역에 최근 내역이 표시됩니다.</p>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+</section>

@@ -1,0 +1,179 @@
+{% extends "includes/system_layout.html" %} {% block title %}대시보드 | OBSIDIAN SHIELD{% endblock %} {% block css %}
+<link rel="stylesheet" href="{{ url_for('main.static', filename='css/dashboard.css') }}" />
+{% endblock %} {% block content %}
+<div id="dashboard-content">{% include "dashboard_content.html" %}</div>
+
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=44189775bf7dd7f1446cae3935c832f3"></script>
+<script id="dashboard-map-data" type="application/json">
+  {{ map_data | tojson | safe }}
+</script>
+<script id="dashboard-initial-data" type="application/json">
+  {"event_logs_mtime": {{ event_logs_mtime | tojson | safe }}}
+</script>
+<script>
+  const dashboardMapData = JSON.parse(document.getElementById("dashboard-map-data").textContent);
+  const dashboardInitialData = JSON.parse(document.getElementById("dashboard-initial-data").textContent);
+  const dashboardMapImageBaseUrl = "{{ url_for('stream.static', filename='uploaded_profiles/') }}";
+  window.dashboardMapData = dashboardMapData;
+  window.dashboardMapViewMode = "all";
+  window.dashboardInitialData = dashboardInitialData;
+</script>
+<script src="{{ url_for('main.static', filename='js/dashboard_map.js') }}"></script>
+<script>
+  (function () {
+    const refreshUrl = "{{ url_for('main.dashboard_refresh') }}";
+    const refreshIntervalMs = 5000;
+    let refreshTimer = null;
+    let lastSeenMtime = window.dashboardInitialData && window.dashboardInitialData.event_logs_mtime !== undefined ? window.dashboardInitialData.event_logs_mtime : null;
+
+    function updateDashboardMapViewButtons() {
+      const buttons = document.querySelectorAll("[data-dashboard-map-view]");
+      const activeMode = window.dashboardMapViewMode || "all";
+
+      buttons.forEach(function (button) {
+        const isActive = button.getAttribute("data-dashboard-map-view") === activeMode;
+        button.classList.toggle("is_active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    }
+
+    function bindDashboardMapViewButtons() {
+      const buttons = document.querySelectorAll("[data-dashboard-map-view]");
+      buttons.forEach(function (button) {
+        button.onclick = function (event) {
+          event.preventDefault();
+          const selectedMode = button.getAttribute("data-dashboard-map-view") === "recent" ? "recent" : "all";
+          window.dashboardMapViewMode = selectedMode;
+          updateDashboardMapViewButtons();
+          if (typeof window.renderDashboardMap === "function") {
+            window.renderDashboardMap(window.dashboardMapData || [], {
+              autoFocus: true,
+              viewMode: selectedMode,
+            });
+          }
+        };
+      });
+    }
+
+    function setDashboardMapViewMode(mode) {
+      const selectedMode = mode === "recent" ? "recent" : "all";
+      window.dashboardMapViewMode = selectedMode;
+      updateDashboardMapViewButtons();
+    }
+
+    function renderMapFromPayload(payload, options) {
+      const mapData = payload.map_data || [];
+      const mapScript = document.getElementById("dashboard-map-data");
+      if (mapScript) {
+        mapScript.textContent = JSON.stringify(mapData);
+      }
+
+      window.dashboardMapData = mapData;
+      updateDashboardMapViewButtons();
+      if (typeof window.renderDashboardMap === "function") {
+        window.renderDashboardMap(mapData, {
+          autoFocus: options && options.autoFocus === true,
+          viewMode: window.dashboardMapViewMode || "all",
+        });
+      }
+    }
+
+    function refreshDashboard() {
+      const params = new URLSearchParams(window.location.search);
+      const cameraId = params.get("camera_id");
+      const url = cameraId
+        ? `${refreshUrl}?camera_id=${encodeURIComponent(cameraId)}&last_seen_mtime=${encodeURIComponent(lastSeenMtime)}`
+        : `${refreshUrl}?last_seen_mtime=${encodeURIComponent(lastSeenMtime)}`;
+
+      fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("refresh failed");
+          }
+          return response.json();
+        })
+        .then(function (payload) {
+          if (!payload.success) {
+            return;
+          }
+
+          if (payload.event_logs_mtime !== undefined) {
+            lastSeenMtime = payload.event_logs_mtime;
+          }
+
+          if (!payload.changed) {
+            if (typeof window.renderDashboardMap === "function") {
+              window.renderDashboardMap(window.dashboardMapData || [], {
+                autoFocus: false,
+                viewMode: window.dashboardMapViewMode || "all",
+              });
+            }
+            return;
+          }
+
+          const container = document.getElementById("dashboard-content");
+          if (!container) {
+            return;
+          }
+
+          container.innerHTML = payload.html;
+          bindDashboardMapViewButtons();
+          setDashboardMapViewMode(window.dashboardMapViewMode || "all");
+
+          const unreadElement = document.querySelector(".summary_card_alert .summary_text strong");
+          if (unreadElement && payload.stats) {
+            unreadElement.textContent = payload.stats.unread_event_count;
+          }
+
+          const latestBox = document.querySelector(".latest_detection_box");
+          if (latestBox && payload.latest_event) {
+            const title = latestBox.querySelector(".latest_detection_content strong");
+            const description = latestBox.querySelector(".latest_detection_content span");
+            const date = latestBox.querySelector(".latest_detection_content small");
+            if (title) title.textContent = payload.latest_event.target_name;
+            if (description) description.textContent = payload.latest_event.short_description;
+            if (date) date.textContent = payload.latest_event.date;
+          }
+
+          renderMapFromPayload(payload, { autoFocus: true });
+        })
+        .catch(function () {
+          console.warn("대시보드 갱신에 실패했습니다.");
+        });
+    }
+
+    function startRefreshLoop() {
+      if (refreshTimer) {
+        clearInterval(refreshTimer);
+      }
+      refreshTimer = setInterval(refreshDashboard, refreshIntervalMs);
+    }
+
+    window.addEventListener("load", function () {
+      bindDashboardMapViewButtons();
+      setDashboardMapViewMode(window.dashboardMapViewMode || "all");
+
+      const cachedMapData = sessionStorage.getItem("dashboardMapData");
+      if (cachedMapData) {
+        try {
+          const parsed = JSON.parse(cachedMapData);
+          renderMapFromPayload({ map_data: parsed });
+        } catch (error) {
+          console.warn("저장된 지도 데이터를 복원하지 못했습니다.", error);
+        }
+      } else {
+        renderMapFromPayload({ map_data: window.dashboardMapData || [] });
+      }
+    });
+
+    window.addEventListener("beforeunload", function () {
+      if (window.dashboardMapData) {
+        sessionStorage.setItem("dashboardMapData", JSON.stringify(window.dashboardMapData));
+      }
+    });
+
+    startRefreshLoop();
+    window.addEventListener("focus", refreshDashboard);
+  })();
+</script>
+{% endblock %}

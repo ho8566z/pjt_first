@@ -18,17 +18,17 @@ _instances = {}
 _camera_coordinates = {}
 
 
-class Camera:
+class StreamCamera:
     """
     백그라운드(thread)에서 카메라의 최신 프레임을 확보 및 제공하는 클래스.
     최초 생성시 아무런 프레임도 확보하지 못하면 검은 화면 반환
     반환되는 frame은 레퍼런스
     """
 
-    def __init__(self, src_path, src_type):
+    def __init__(self, src_path):
         self.src_path = src_path
-        self.is_video = src_type == VIDEO
         self.camera = None
+        self.is_paused = False
 
         self.frame_queue = deque(maxlen=3)
         self.frame_queue.append(BLACK_SCREEN.copy())
@@ -47,20 +47,14 @@ class Camera:
         self.camera = VideoCapture(self.src_path)
 
     def start(self):
+        self.is_paused = False
+
         if not self.on_running:
             self.on_running = True
             self.thread = threading.Thread(target=self._capture_loop, daemon=True)
             self.thread.start()
 
     def _capture_loop(self):
-        fps = 0
-
-        if self.is_video:
-            fps = self.camera.get(CAP_PROP_FPS)
-
-        if fps <= 0:
-            fps = FRAME_DEFAULT
-
         frame_delay = 1.0 / FRAME_DEFAULT
 
         while self.on_running:
@@ -84,29 +78,127 @@ class Camera:
                 else:
                     time.sleep(CPU_USAGE_DELAY)
 
-            # 동영상이 끝났거나, 스트리밍에서 프레임을 가져오지 못한 경우
             else:
-                if self.is_video:
-                    self.camera.set(CAP_PROP_POS_FRAMES, 0)
-                else:
-                    time.sleep(UNSTABLE_STREAMING_DELAY)
+                time.sleep(UNSTABLE_STREAMING_DELAY)
 
     def read_frame(self):
         with self.lock:
             if len(self.frame_queue) > 1:
-                # return self.frame_queue[-1]
                 return self.frame_queue.popleft()
             else:
                 return self.frame_queue[0]
 
     def release(self):
         self.on_running = False
+        self.is_paused = True
 
         if self.thread is not None:
             self.thread.join()
 
         if self.camera and self.camera.isOpened():
             self.camera.release()
+
+
+class VideoCamera:
+    """
+    백그라운드(thread)에서 비디오 파일의 최신 프레임을 확보 및 제공하는 클래스.
+    최초 생성시 아무런 프레임도 확보하지 못하면 검은 화면 반환
+    반환되는 frame은 레퍼런스
+    """
+
+    def __init__(
+        self,
+        src_path,
+    ):
+        self.src_path = src_path
+        self.camera = None
+        self.is_paused = False
+
+        self.frame_queue = deque(maxlen=3)
+        self.frame_queue.append(BLACK_SCREEN.copy())
+
+        self.on_running = False
+        self.thread = None
+        self.event = threading.Event()
+        self.lock = threading.Lock()
+
+        self.connect()
+        self.start()
+
+    def connect(self):
+        if self.camera is not None:
+            self.camera.release()
+
+        self.camera = VideoCapture(self.src_path)
+
+    def start(self):
+        self.is_paused = False
+
+        if not self.on_running:
+            self.on_running = True
+
+            self.event.set()
+            self.thread = threading.Thread(target=self._capture_loop, daemon=True)
+            self.thread.start()
+
+        else:
+            self.event.set()
+
+    def _capture_loop(self):
+        fps = self.camera.get(CAP_PROP_FPS)
+
+        if fps <= 0:
+            fps = FRAME_DEFAULT
+
+        frame_delay = 1.0 / FRAME_DEFAULT
+
+        while self.on_running:
+            self.event.wait()
+
+            if self.camera is None or not self.camera.isOpened():
+                self.connect()
+                time.sleep(CONNECT_DELAY)
+                continue
+
+            start_time = time.time()
+            success, frame = self.camera.read()
+
+            if success and frame is not None:
+                with self.lock:
+                    self.frame_queue.append(frame)
+
+                processing_time = time.time() - start_time
+                sleep_time = frame_delay - processing_time
+
+                if sleep_time > 0:
+                    time.sleep(sleep_time)
+                else:
+                    time.sleep(CPU_USAGE_DELAY)
+
+            # 동영상이 끝나면 처음부터 다시 재생.
+            else:
+                self.camera.set(CAP_PROP_POS_FRAMES, 0)
+
+    def read_frame(self):
+        with self.lock:
+            if len(self.frame_queue) > 1:
+                return self.frame_queue.popleft()
+            else:
+                return self.frame_queue[0]
+
+    def release(self):
+        self.on_running = False
+        self.event.set()
+
+        if self.thread is not None:
+            self.thread.join()
+
+        if self.camera and self.camera.isOpened():
+            self.camera.release()
+
+    def pause(self):
+        self.event.clear()
+        self.is_paused = True
 
 
 # ================================================================
@@ -117,7 +209,9 @@ def add_camera(src_path, id, src_type=VIDEO):
         print("이미 등록된 카메라입니다.")
         return False
 
-    _instances[id] = Camera(src_path, src_type)
+    _instances[id] = (
+        VideoCamera(src_path) if src_type == VIDEO else StreamCamera(src_path)
+    )
 
     match src_path:
         case "tests/tokyo_street_trim01.mp4" | "tests/tokyo_street_trim02.mp4":
@@ -137,6 +231,40 @@ def delete_camera(id):
 
     # 안전 release
     threading.Thread(target=cam.release, daemon=True).start()
+
+
+def start_camera(id):
+    if id not in _instances:
+        return
+
+    _instances[id].start()
+
+
+def stop_camera(id):
+    if id not in _instances:
+        return
+
+    cam = _instances[id]
+
+    if isinstance(cam, StreamCamera):
+        threading.Thread(target=cam.release, daemon=True).start()
+
+    elif isinstance(cam, VideoCamera):
+        cam.pause()
+
+
+def is_paused_camera(id):
+    if id not in _instances:
+        return False
+
+    return _instances[id].is_paused
+
+
+def is_video_camera(id):
+    if id not in _instances:
+        return False
+
+    return True if isinstance(_instances[id], VideoCamera) else False
 
 
 def clear():
