@@ -13,12 +13,20 @@ class FrameAnalyzer:
         self.latest_frames = {}
         self.start()
 
+# =================================================
+# 스레드 시작: 백그라운드 분석 스레드가 실행 중이지 않다면 
+# 데몬 스레드로 새로 시작합니다.
+# =================================================
     def start(self):
         if not self.on_running:
             self.on_running = True
             self.thread = threading.Thread(target=self._analyze_loop, daemon=True)
             self.thread.start()
 
+# =================================================
+# 실시간 분석 루프: 백그라운드에서 카메라 프레임을 계속 가져와 
+# AI 사람 추적(person_tracker)을 수행하고 결과를 저장합니다.
+# =================================================
     def _analyze_loop(self):
         while self.on_running:
             camera_ids = camera.get_all_camera_ids()
@@ -41,10 +49,18 @@ class FrameAnalyzer:
 
             time.sleep(0.001)
 
+# =================================================
+# 최신 프레임 조회: 스레드 충돌 없이 안전하게 AI 분석이 
+# 완료된 최신 카메라 프레임들을 반환합니다.
+# =================================================
     def get_frame(self):
         with self.lock:
             return self.latest_frames
 
+# =================================================
+# 자원 해제: 백그라운드 스레드 루프를 정지시키고 스레드가 
+# 안전하게 종료될 때까지 기다립니다.
+# =================================================
     def release(self):
         self.on_running = False
 
@@ -55,6 +71,10 @@ class FrameAnalyzer:
 _instance = FrameAnalyzer()
 
 
+# =================================================
+# 전역 간편 호출 인터페이스: 클래스 인스턴스(_instance) 생성 
+# 없이 어디서든 최신 분석 프레임을 바로 가져올 수 있게 해줍니다.
+# =================================================
 def get_latest_frames():
     return _instance.get_frame()
 

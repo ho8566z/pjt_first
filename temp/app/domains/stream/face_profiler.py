@@ -20,6 +20,10 @@ _instance = None
 _lock = threading.Lock()
 
 
+# =================================================
+# InsightFace의 buffalo_l 모델을 CPU 또는 CUDA(GPU) 
+# 환경에 맞게 로드하고, 얼굴 탐지/인식 모듈을 초기화합니다.
+# =================================================
 @mute_print_and_warnings
 def _create_face_app():
     app = FaceAnalysis(
@@ -32,6 +36,11 @@ def _create_face_app():
     return app
 
 
+# =================================================
+# 더블 체크 락킹(Double-checked locking)을 적용해 
+# 프로그램이 실행되는 동안 얼굴 인식 AI 모델 객체를 딱 
+# 하나만 안전하게 생성(싱글톤)하고 재사용합니다.
+# =================================================
 def get_face_app():
     global _instance
 
@@ -54,6 +63,11 @@ _embedding_matrix_cache: np.ndarray = np.empty((0, 512))
 _face_ids_cache: np.ndarray = np.array([])
 
 
+# =================================================
+# 입력받은 이미지에서 얼굴을 찾아 512차원의 정규화된 특징점 
+# 벡터(Normed Embedding)를 추출합니다. 
+# (얼굴 미탐지 시 None 반환)
+# =================================================
 def extract_embedding(face_img) -> np.ndarray | None:
     if face_img is None:
         return None
@@ -63,6 +77,12 @@ def extract_embedding(face_img) -> np.ndarray | None:
     return None if not faces else faces[0].normed_embedding
 
 
+# =================================================
+# 특정 인물(face_id)의 신규 사진이 들어오면 기존 저장된 벡터 
+# 합계에 누적 합산하여 평균 특징점(Mean Vector)을 계산한 뒤 
+# .npz 파일로 압축 저장합니다. 
+# (사진이 여러 장 추가될수록 식별 정확도가 상승함)
+# =================================================
 def add_or_update_face(face_id: str, img) -> bool:
     new_embedding = extract_embedding(img)
 
@@ -102,6 +122,11 @@ def add_or_update_face(face_id: str, img) -> bool:
     return True
 
 
+# =================================================
+# 디렉토리에 저장된 모든 인물의 평균 특징점 파일들을 읽어와 
+# NumPy 행렬(_embedding_matrix_cache) 형태로 메모리에 
+# 미리 올려두어 빠른 유사도 비교를 준비합니다.
+# =================================================
 def init_load_all_embeddings():
     global _embedding_matrix_cache, _face_ids_cache
 
@@ -136,6 +161,16 @@ IDENTIFY_THREASHOLD = 0.45
 NO_MATCH = ("", -1.0)
 
 
+# =================================================
+# 입력된 이미지의 얼굴 특징점과 메모리에 로드된 전체 인물들의 
+# 특징점 벡터 간 내적(Dot Product = 코사인 유사도)을 
+# 한 번에 빠른 행렬 연산으로 계산합니다.
+# -------------------------------------------------
+# 가장 높은 유사도가 임계값(IDENTIFY_THREASHOLD = 0.45) 
+# 이상이면 해당 인물의 ID와 일치율(face_id, match_ratio)을 
+# 반환하고, 미달되거나 탐지 실패 시 빈 값(("", -1.0))을 
+# 반환합니다.
+# =================================================
 def identify(person_img) -> tuple[str, float]:
     """
     입력받은 사람 이미지와 db에 등록된 검색 대상들과의 얼굴 특징점 비교\n

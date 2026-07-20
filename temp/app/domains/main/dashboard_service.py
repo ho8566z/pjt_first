@@ -16,7 +16,10 @@ DATE_FORMATS = (
     "%Y/%m/%d %H:%M:%S",
 )
 
-
+# =================================================
+# JSON 파일 등에서 문자열 형태로 넘어온 다양한 형식의 날짜 
+# 데이터를 안전하게 Python의 datetime 객체로 변환
+# =================================================
 def _parse_datetime(value):
     """JSON에 저장된 여러 날짜 형식을 안전하게 datetime으로 변환한다."""
     if not value:
@@ -31,6 +34,10 @@ def _parse_datetime(value):
     return None
 
 
+# =================================================
+# 이벤트 데이터 객체에서 위도(Latitude)와 경도(Longitude) 
+# 정보를 추출하여 화면 표출용 좌표 문자열로 정형화
+# =================================================
 def _format_location(event):
     latitude = event.get(configs.KEY_EVENT_LAT)
     longitude = event.get(configs.KEY_EVENT_LON)
@@ -44,6 +51,10 @@ def _format_location(event):
         return f"{latitude}, {longitude}"
 
 
+# =================================================
+# 전체 이벤트 목록 중 가장 최신 발생한 이벤트 limit개(기본값 
+# 6개)를 추출하여 대시보드 카드/리스트 뷰에 맞게 데이터를 가공
+# =================================================
 def _make_recent_events(events, targets, limit=6):
     recent_events = []
 
@@ -79,6 +90,10 @@ def _make_recent_events(events, targets, limit=6):
     return recent_events
 
 
+# =================================================
+# 시스템에서 현재 가동 중인 카메라 스트리밍 모듈을 조회하여 
+# 대시보드 상단 카메라 현황에 필요한 요약 정보를 구성
+# =================================================
 def _get_camera_data():
     """현재 실행 중인 카메라 정보를 대시보드용으로 정리한다."""
     try:
@@ -96,6 +111,10 @@ def _get_camera_data():
     }
 
 
+# =================================================
+# 대시보드 화면 렌더링에 필요한 모든 통합 데이터(통계, 최신 이벤트, 
+# 카메라, 지적/지도 데이터, 생성 시각)를 집계하여 최종 반환
+# =================================================
 def get_dashboard_data():
     accounts = load_json(ACCOUNT_FILE)
     events = load_json(EVENT_LOGS_FILE)

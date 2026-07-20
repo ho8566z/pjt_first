@@ -31,6 +31,11 @@ LOGGING_INTERVAL = 15
 _executor = ThreadPoolExecutor(max_workers=8)
 
 
+# =================================================
+# 카메라별로 개별 BoT-SORT 객체 추적기를 생성하고 관리하여 
+# multi-camera 객체 ID가 서로 엉키지 않도록 독립된 캐시 
+# 공간을 할당합니다.
+# =================================================
 def get_or_create_tracker(camera_id):
     if camera_id not in _trackers:
         tracker_yaml = check_yaml("botsort.yaml")
@@ -44,6 +49,11 @@ def get_or_create_tracker(camera_id):
     return _trackers[camera_id]
 
 
+# =================================================
+# 얼굴 식별(AI 연산) 시 프레임이 멈추는 병목 현상을 막기 위해, 
+# 최대 8개의 백그라운드 스레드에서 비동기로 얼굴을 비교하고 
+# 결과를 캐시(_tracker_caches)에 업데이트합니다.
+# =================================================
 def track_all(frames: list, camera_ids):
     results = _model.predict(frames, stream=True)
     frames_output = [frame.copy() for frame in frames]
@@ -70,6 +80,10 @@ def track_all(frames: list, camera_ids):
     return frames_output
 
 
+# =================================================
+# 입력된 프레임에서 사람(Class 0)을 탐지하고 바운딩 박스와 
+# 추적 ID만 프레임에 그려서 반환하는 단순 추적 함수입니다.
+# =================================================
 def _async_identify(camera_id, track_id, person_img):
     try:
         user_id, match_ratio = face_profiler.identify(person_img)
@@ -87,6 +101,32 @@ def _async_identify(camera_id, track_id, person_img):
             cache[track_id]["in_flight"] = False
 
 
+# =================================================
+'''
+객체 추적: YOLOv8 + BoT-SORT로 화면 속 사람의 위치와 추적 
+    ID(track_id)를 파악합니다.
+
+비동기 식별 요청 제한:
+
+미인식 인물은 1초 간격(IDENTIFY_RETRY_INTERVAL), 이미 인식된 
+    인물은 30초 간격(IDENTIFY_RECHECK_INTERVAL)으로 재조회 
+    주기를 조절하여 GPU/CPU 과부하를 방지합니다.
+
+in_flight 플래그를 두어 동일 ID에 대해 중복 스레드 요청이 
+    들어가지 않도록 제어합니다.
+
+인식 객체 시각화 및 이벤트 로깅:
+
+DB에 등록된 인물일 경우 화면에 이름 (유사도) 라벨을 시각화합니다.
+
+15초 간격(LOGGING_INTERVAL)으로 이벤트 캡처 이미지를 
+    저장(imwrite)하고 위치 정보와 함께 이벤트 데이터베이스 
+    로그(create_event_data)를 생성합니다.
+
+메모리 정리: 화면에서 사라진 추적 대상(dead track_id)의 
+    캐시를 자동으로 삭제하여 메모리 누수를 방지합니다.
+'''
+# =================================================
 def track_identified(frames: list, camera_ids) -> list:
     """프레임을 리스트로 받아서 각 프레임들을 분석 후 db에 등록된 사람에게만 주석을 달아서 반환"""
     results = _model.predict(frames, stream=True)
@@ -180,6 +220,10 @@ def track_identified(frames: list, camera_ids) -> list:
     return frames_output
 
 
+# =================================================
+# 객체의 바운딩 박스가 전체 영상의 경계선(너비, 높이)을 
+# 벗어나지 않도록 좌표값을 안전하게 제한(Clamp)합니다.
+# =================================================
 def clamp_boundary(boundary_origin, clamper):
     x1, y1, x2, y2 = boundary_origin
     c_x1, c_y1, c_x2, c_y2 = clamper
@@ -190,6 +234,10 @@ def clamp_boundary(boundary_origin, clamper):
     return (x1, y1, x2, y2)
 
 
+# =================================================
+# 전달받은 제한 좌표를 기반으로 영상 프레임에서 탐지된 사람 
+# 영역만 크롭(Crop)하여 얼굴 식별 모듈로 전달합니다.
+# =================================================
 def crop_frame(frame, boundary):
     if frame is None:
         return None

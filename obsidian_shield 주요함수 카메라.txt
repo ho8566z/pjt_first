@@ -1,0 +1,61 @@
+# =================================================
+# 백그라운드에서 동영상 프레임을 일정 FPS 간격으로 읽으며, 
+# 영상이 끝나면 처음부터 무한 반복 재생시킵니다.
+# =================================================
+    def _capture_loop(self):
+        fps = self.camera.get(CAP_PROP_FPS)
+
+        if fps <= 0:
+            fps = FRAME_DEFAULT
+
+        frame_delay = 1.0 / FRAME_DEFAULT
+
+        while self.on_running:
+            self.event.wait()
+
+            if self.camera is None or not self.camera.isOpened():
+                self.connect()
+                time.sleep(CONNECT_DELAY)
+                continue
+
+            start_time = time.time()
+            success, frame = self.camera.read()
+
+            if success and frame is not None:
+                with self.lock:
+                    self.frame_queue.append(frame)
+
+                processing_time = time.time() - start_time
+                sleep_time = frame_delay - processing_time
+
+                if sleep_time > 0:
+                    time.sleep(sleep_time)
+                else:
+                    time.sleep(CPU_USAGE_DELAY)
+
+            # 동영상이 끝나면 처음부터 다시 재생.
+            else:
+                self.camera.set(CAP_PROP_POS_FRAMES, 0)
+
+# =================================================
+# 큐에서 프레임을 하나씩 꺼내 반환합니다.
+# =================================================
+    def read_frame(self):
+        with self.lock:
+            if len(self.frame_queue) > 1:
+                return self.frame_queue.popleft()
+            else:
+                return self.frame_queue[0]
+
+# =================================================
+# 동영상 스레드를 완전히 종료하고 비디오 자원을 해제합니다.
+# =================================================
+    def release(self):
+        self.on_running = False
+        self.event.set()
+
+        if self.thread is not None:
+            self.thread.join()
+
+        if self.camera and self.camera.isOpened():
+            self.camera.release()
