@@ -9,6 +9,10 @@ python version 3.12.0
 1. opencv-python
 2. ultralytics
 3. flask
+4. insightface
+5. captcha
+6. pandas
+7. openpyxl
 
 ### Entry point ------
 

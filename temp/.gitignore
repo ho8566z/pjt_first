@@ -1,8 +1,0 @@
-**/__pycache__/
-**/venv/
-**/.venv/
-**/registered_faces/
-**/yolov8n.pt
-**/.vscode/
-**/tests/
-**/.prettierignore

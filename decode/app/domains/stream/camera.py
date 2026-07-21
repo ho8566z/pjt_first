@@ -1,239 +1,369 @@
-import os
 import threading
-import cv2
+import time
 import numpy as np
-from insightface.app import FaceAnalysis
-from ultralytics import YOLO
+from cv2 import VideoCapture
+from cv2 import CAP_PROP_POS_FRAMES
+from cv2 import CAP_PROP_FPS
+from collections import deque
+
+VIDEO = "video"
+BLACK_SCREEN = np.zeros((1080, 1920, 3), np.uint8)
+
+FRAME_DEFAULT = 24
+CONNECT_DELAY = 0.5
+UNSTABLE_STREAMING_DELAY = 0.1
+CPU_USAGE_DELAY = 0.001
+
+_instances = {}
+_camera_coordinates = {}
 
 
-camera = None
-camera_lock = threading.Lock()
-ESP32_STREAM_URL = "http://192.168.137.159:81/stream"
-
-# ==========================================
-# 1. AI 모델 및 데이터베이스 초기화
-# ==========================================
-# 1) YOLOv8 모델 (ByteTrack 사용을 위한 모델)
-model = YOLO("yolov8n.pt")
-
-# 2) InsightFace 모델 초기화 (얼굴 탐지 및 512차원 특징 추출용)
-# 저사양 환경을 고려해 기본 det_size를 작게(320x320) 설정합니다.
-face_app = FaceAnalysis(name="buffalo_l", providers=["CPUExecutionProvider"])
-face_app.prepare(ctx_id=0, det_size=(320, 320))
-
-# 3) 신원 데이터베이스 및 트래킹 변수
-known_face_encodings = []
-known_face_names = []
-tracked_identities = {}  # {track_id: "이름"}
-
-REG_DIR = "app/domains/stream/static/registered_faces"
-
-
-def init_camera():
-    global camera
-    if camera is None:
-        print("camera connecting...")
-        camera = cv2.VideoCapture(ESP32_STREAM_URL)
-        print("camera connected")
-        # 서버 기동 시점에 얼굴 DB도 같이 빌드합니다.
-        build_face_db()
-
-
-def build_face_db():
+class StreamCamera:
     """
-    등록된 폴더 구조를 읽어 얼굴 특징점(Embedding) DB를 구축하는 함수
-    구조: REG_DIR/사람이름폴더/사진들.jpg
+    백그라운드(thread)에서 카메라의 최신 프레임을 확보 및 제공하는 클래스.
+    최초 생성시 아무런 프레임도 확보하지 못하면 검은 화면 반환
+    반환되는 frame은 레퍼런스
     """
-    global known_face_encodings, known_face_names
-    print(">> 등록된 신원 데이터를 로딩 중입니다...")
 
-    if not os.path.exists(REG_DIR):
-        os.makedirs(REG_DIR)
-        print(
-            f"'{REG_DIR}' 폴더가 생성되었습니다. 사람 이름으로 폴더를 만들고 사진들을 넣은 후 다시 실행하세요."
-        )
-        return
+    def __init__(self, src_path):
+        self.src_path = src_path
+        self.camera = None
+        self.is_paused = False
 
-    # 1단계: 하위 폴더(사람 이름) 루프
-    for person_name in os.listdir(REG_DIR):
-        person_dir = os.path.join(REG_DIR, person_name)
+        self.frame_queue = deque(maxlen=3)
+        self.frame_queue.append(BLACK_SCREEN.copy())
 
-        # 폴더가 아닌 파일은 건너뜁니다.
-        if not os.path.isdir(person_dir):
-            continue
+        self.on_running = False
+        self.thread = None
+        self.lock = threading.Lock()
 
-        print(f"[{person_name}]의 사진들을 분석 중...")
-        success_count = 0
+        self.connect()
+        self.start()
 
-        # 2단계: 각 사람 폴더 안의 이미지 파일 루프
-        for filename in os.listdir(person_dir):
-            if filename.lower().endswith((".jpg", ".jpeg", ".png")):
-                path = os.path.join(person_dir, filename)
-                img = cv2.imread(path)
-                if img is None:
-                    continue
+# =================================================
+# 기존 카메라 연결을 해제하고 지정된 소스 경로(src_path)로 
+# 새로 영상을 연결합니다.
+# =================================================
+    def connect(self):
+        if self.camera is not None:
+            self.camera.release()
 
-                # InsightFace로 얼굴 분석
-                faces = face_app.get(img)
+        self.camera = VideoCapture(self.src_path)
 
-                if len(faces) > 0:
-                    # 얼굴 임베딩 데이터와 매칭될 '폴더명(이름)'을 저장
-                    known_face_encodings.append(faces[0].normed_embedding)
-                    known_face_names.append(
-                        person_name
-                    )  # 파일명이 아니라 폴더명을 이름으로 사용!
-                    success_count += 1
+# =================================================
+# 캡처 스레드가 멈춰 있다면 데몬 스레드로 캡처 루프를 새로 
+# 실행합니다.
+# =================================================
+    def start(self):
+        self.is_paused = False
+
+        if not self.on_running:
+            self.on_running = True
+            self.thread = threading.Thread(target=self._capture_loop, daemon=True)
+            self.thread.start()
+
+# =================================================
+# 백그라운드에서 실시간 영상을 끊임없이 읽어와 프레임 
+# 큐(deque)에 저장을 반복합니다. (실패 시 재연결)
+# =================================================
+    def _capture_loop(self):
+        frame_delay = 1.0 / FRAME_DEFAULT
+
+        while self.on_running:
+            if self.camera is None or not self.camera.isOpened():
+                self.connect()
+                time.sleep(CONNECT_DELAY)
+                continue
+
+            start_time = time.time()
+            success, frame = self.camera.read()
+
+            if success and frame is not None:
+                with self.lock:
+                    self.frame_queue.append(frame)
+
+                processing_time = time.time() - start_time
+                sleep_time = frame_delay - processing_time
+
+                if sleep_time > 0:
+                    time.sleep(sleep_time)
                 else:
-                    print(f"  └ 실패 (얼굴 인식 불가): {filename}")
+                    time.sleep(CPU_USAGE_DELAY)
 
-        if success_count > 0:
-            print(f"  └ {person_name} 등록 완료 ({success_count}장의 사진)")
+            else:
+                time.sleep(UNSTABLE_STREAMING_DELAY)
 
-    print(
-        f">> 총 {len(set(known_face_names))}명, {len(known_face_names)}개의 얼굴 DB 구축 완료.\n"
+# =================================================
+# 스레드 충돌 없이 안전하게 가장 오래된 프레임을 꺼내어 
+# 반환합니다. (부족 시 최신 프레임 유지)
+# =================================================
+    def read_frame(self):
+        with self.lock:
+            if len(self.frame_queue) > 1:
+                return self.frame_queue.popleft()
+            else:
+                return self.frame_queue[0]
+
+# =================================================
+# 캡처 스레드를 정지시키고 카메라 리소스 연결을 완전히 해제합니다.
+# =================================================
+    def release(self):
+        self.on_running = False
+        self.is_paused = True
+
+        if self.thread is not None:
+            self.thread.join()
+
+        if self.camera and self.camera.isOpened():
+            self.camera.release()
+
+
+class VideoCamera:
+    """
+    백그라운드(thread)에서 비디오 파일의 최신 프레임을 확보 및 제공하는 클래스.
+    최초 생성시 아무런 프레임도 확보하지 못하면 검은 화면 반환
+    반환되는 frame은 레퍼런스
+    """
+
+    def __init__(
+        self,
+        src_path,
+    ):
+        self.src_path = src_path
+        self.camera = None
+        self.is_paused = False
+
+        self.frame_queue = deque(maxlen=3)
+        self.frame_queue.append(BLACK_SCREEN.copy())
+
+        self.on_running = False
+        self.thread = None
+        self.event = threading.Event()
+        self.lock = threading.Lock()
+
+        self.connect()
+        self.start()
+
+# =================================================
+# 비디오 파일 스트림을 Open/재연결합니다.
+# =================================================
+    def connect(self):
+        if self.camera is not None:
+            self.camera.release()
+
+        self.camera = VideoCapture(self.src_path)
+
+# =================================================
+# 일시정지 상태를 해제하고, 동영상 캡처 스레드를 시작하거나 
+# 재개합니다.
+# =================================================
+    def start(self):
+        self.is_paused = False
+
+        if not self.on_running:
+            self.on_running = True
+
+            self.event.set()
+            self.thread = threading.Thread(target=self._capture_loop, daemon=True)
+            self.thread.start()
+
+        else:
+            self.event.set()
+
+# =================================================
+# 백그라운드에서 동영상 프레임을 일정 FPS 간격으로 읽으며, 
+# 영상이 끝나면 처음부터 무한 반복 재생시킵니다.
+# =================================================
+    def _capture_loop(self):
+        fps = self.camera.get(CAP_PROP_FPS)
+
+        if fps <= 0:
+            fps = FRAME_DEFAULT
+
+        frame_delay = 1.0 / FRAME_DEFAULT
+
+        while self.on_running:
+            self.event.wait()
+
+            if self.camera is None or not self.camera.isOpened():
+                self.connect()
+                time.sleep(CONNECT_DELAY)
+                continue
+
+            start_time = time.time()
+            success, frame = self.camera.read()
+
+            if success and frame is not None:
+                with self.lock:
+                    self.frame_queue.append(frame)
+
+                processing_time = time.time() - start_time
+                sleep_time = frame_delay - processing_time
+
+                if sleep_time > 0:
+                    time.sleep(sleep_time)
+                else:
+                    time.sleep(CPU_USAGE_DELAY)
+
+            # 동영상이 끝나면 처음부터 다시 재생.
+            else:
+                self.camera.set(CAP_PROP_POS_FRAMES, 0)
+
+# =================================================
+# 큐에서 프레임을 하나씩 꺼내 반환합니다.
+# =================================================
+    def read_frame(self):
+        with self.lock:
+            if len(self.frame_queue) > 1:
+                return self.frame_queue.popleft()
+            else:
+                return self.frame_queue[0]
+
+# =================================================
+# 동영상 스레드를 완전히 종료하고 비디오 자원을 해제합니다.
+# =================================================
+    def release(self):
+        self.on_running = False
+        self.event.set()
+
+        if self.thread is not None:
+            self.thread.join()
+
+        if self.camera and self.camera.isOpened():
+            self.camera.release()
+
+# =================================================
+# 스레드를 종료하지 않고 동영상 재생을 일시정지시킵니다.
+# =================================================
+    def pause(self):
+        self.event.clear()
+        self.is_paused = True
+
+
+# ================================================================
+# 카메라 관리 함수들
+# ================================================================
+
+# =================================================
+# 특정 ID로 실시간 카메라 또는 동영상을 생성하여 등록하고, 
+# 해당 위치 좌표(위경도)를 할당합니다.
+# =================================================
+def add_camera(src_path, id, src_type=VIDEO):
+    if id in _instances:
+        print("이미 등록된 카메라입니다.")
+        return False
+
+    _instances[id] = (
+        VideoCamera(src_path) if src_type == VIDEO else StreamCamera(src_path)
     )
 
+    match src_path:
+        case "tests/tokyo_street_trim01.mp4" | "tests/tokyo_street_trim02.mp4":
+            _camera_coordinates[id] = (37.527420, 127.028330)
+        case _:
+            _camera_coordinates[id] = (36.3288, 127.4230)
 
-# def build_face_db():
-#     """등록된 사진 폴더를 읽어 얼굴 특징점(Embedding) DB를 구축하는 함수"""
-#     global known_face_encodings, known_face_names
-#     print(">> 등록된 신원 데이터를 로딩 중입니다...")
-
-#     if not os.path.exists(REG_DIR):
-#         os.makedirs(REG_DIR)
-#         print(f"'{REG_DIR}' 폴더가 생성되었습니다. 증명사진을 넣고 다시 실행하세요.")
-#         return
-
-#     for filename in os.listdir(REG_DIR):
-#         if filename.endswith((".jpg", ".jpeg", ".png")):
-#             path = os.path.join(REG_DIR, filename)
-#             img = cv2.imread(path)
-#             if img is None:
-#                 continue
-
-#             # InsightFace로 얼굴 분석
-#             faces = face_app.get(img)
-
-#             if len(faces) > 0:
-#                 # 첫 번째로 발견된 얼굴의 512차원 임베딩 저장
-#                 known_face_encodings.append(faces[0].normed_embedding)
-#                 known_face_names.append(os.path.splitext(filename)[0])
-#                 print(f" 등록 완료: {os.path.splitext(filename)[0]}")
-#             else:
-#                 print(f" 실패 (얼굴 인식 불가): {filename}")
-
-#     print(f">> 총 {len(known_face_names)}명의 신원 DB 구축 완료.\n")
+    return True
 
 
-def reconnect_camera():
-    global camera
-    print("camera reconnecting...")
-    try:
-        if camera is not None:
-            camera.release()
-    except Exception as e:
-        print(e)
-    camera = cv2.VideoCapture(ESP32_STREAM_URL)
-    print("camera reconnected")
+# =================================================
+# 등록된 카메라를 딕셔너리에서 제거하고 비동기 스레드로 자원을 안전하게 해제합니다.
+# =================================================
+def delete_camera(id):
+    if id not in _instances:
+        return
+
+    cam = _instances[id]
+    del _instances[id]
+
+    # 안전 release
+    threading.Thread(target=cam.release, daemon=True).start()
 
 
-def get_frame():
-    global camera, tracked_identities
-    if camera is None:
-        return None
+# =================================================
+# 지정한 ID의 카메라/동영상 작동을 시작하거나 일시정지를 해제합니다.
+# =================================================
+def start_camera(id):
+    if id not in _instances:
+        return
 
-    try:
-        if not camera.isOpened():
-            reconnect_camera()
-            return None
+    _instances[id].start()
 
-        with camera_lock:
-            success, frame = camera.read()
 
-        if not success:
-            reconnect_camera()
-            return None
+# =================================================
+# 실시간 카메라는 완전 해제(release), 동영상은 일시정지
+# (pause)시킵니다.
+# =================================================
+def stop_camera(id):
+    if id not in _instances:
+        return
 
-        # ==========================================
-        # 2. YOLO + ByteTrack 추적 파이프라인
-        # ==========================================
-        # persist=True 가 ByteTrack을 활성화하는 옵션입니다. 클래스는 사람(0)만 탐지합니다.
-        results = model.track(frame, persist=True, classes=[0], conf=0.5, verbose=False)
-        result = results[0]
+    cam = _instances[id]
 
-        if result.boxes is not None and result.boxes.id is not None:
-            boxes = result.boxes.xyxy.int().cpu().tolist()
-            track_ids = result.boxes.id.int().cpu().tolist()
-            confidences = result.boxes.conf.float().cpu().tolist()
+    if isinstance(cam, StreamCamera):
+        threading.Thread(target=cam.release, daemon=True).start()
 
-            for box, track_id, conf in zip(boxes, track_ids, confidences):
-                x1, y1, x2, y2 = box
+    elif isinstance(cam, VideoCamera):
+        cam.pause()
 
-                # 예외 처리: 바운딩 박스가 화면 밖으로 나가는 것 방지
-                y1, y2 = max(0, y1), min(frame.shape[0], y2)
-                x1, x2 = max(0, x1), min(frame.shape[1], x2)
 
-                # [최적화] 처음 본 Track ID 일 때만 신원 분석(InsightFace) 수행
-                if track_id not in tracked_identities:
-                    tracked_identities[track_id] = "Unknown"  # 기본값 지정
+# =================================================
+# 해당 ID의 카메라인지 일시정지 상태인지 여부를 반환합니다.
+# =================================================
+def is_paused_camera(id):
+    if id not in _instances:
+        return False
 
-                    # 사람 영역 크롭
-                    person_crop = frame[y1:y2, x1:x2]
+    return _instances[id].is_paused
 
-                    if person_crop.size > 0 and len(known_face_encodings) > 0:
-                        # 크롭된 사람 영역 내부에서 얼굴 추출
-                        faces = face_app.get(person_crop)
 
-                        if len(faces) > 0:
-                            current_embedding = faces[0].normed_embedding
-                            best_match = "Unknown"
-                            max_similarity = -1.0
+# =================================================
+# 해당 ID의 카메라이가 동영상 파일(VideoCamera) 인스턴스인지 
+# 확인합니다.
+# =================================================
+def is_video_camera(id):
+    if id not in _instances:
+        return False
 
-                            # DB 내의 얼굴들과 코사인 유사도 비교
-                            for known_embedding, name in zip(
-                                known_face_encodings, known_face_names
-                            ):
-                                # 두 벡터의 내적 (정규화된 벡터이므로 내적이 곧 코사인 유사도)
-                                similarity = np.dot(current_embedding, known_embedding)
+    return True if isinstance(_instances[id], VideoCamera) else False
 
-                                if similarity > max_similarity:
-                                    max_similarity = similarity
-                                    best_match = name
 
-                            # 유사도가 기준값(0.4)을 넘으면 신원 확정 (InsightFace 기준 보통 0.4~0.45가 적당)
-                            if max_similarity > 0.42:
-                                tracked_identities[track_id] = (
-                                    f"{best_match} ({max_similarity * 100:.0f}%)"
-                                )
+# =================================================
+# 등록된 모든 카메라를 한 번에 안전하게 삭제 및 정지시킵니다.
+# =================================================
+def clear():
+    for id in tuple(_instances.keys()):
+        delete_camera(id)
 
-                # ==========================================
-                # 3. 화면 시각화 (인식 결과 그리기)
-                # ==========================================
-                identity_label = tracked_identities.get(track_id, "Unknown")
 
-                # 등록된 사람(Unknown이 아님)은 초록색, 미등록자는 빨간색 상자
-                color = (0, 255, 0) if "Unknown" not in identity_label else (0, 0, 255)
+# =================================================
+# 해당 ID 카메라의 최신 프레임을 꺼내 반환합니다. 
+# (없을 시 검은 화면 반환)
+# =================================================
+def get_frame_by_id(id):
+    "반환되는 frame은 레퍼런스 타입"
+    if id not in _instances:
+        return BLACK_SCREEN
 
-                # 박스 및 이름 표기
-                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-                cv2.putText(
-                    frame,
-                    f"ID {track_id}: {identity_label}",
-                    (x1, y1 - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.6,
-                    color,
-                    2,
-                )
+    return _instances[id].read_frame()
 
-                # 중심점 표시
-                center_x = (x1 + x2) // 2
-                center_y = (y1 + y2) // 2
-                cv2.circle(frame, (center_x, center_y), 4, (255, 0, 0), -1)
 
-        return frame
+# =================================================
+# 현재 등록된 모든 카메라 ID 목록을 튜플 형태로 반환합니다.
+# =================================================
+def get_all_camera_ids():
+    return tuple(_instances.keys())
 
-    except Exception as e:
-        print("camera exception:", e)
-        reconnect_camera()
-        return None
+
+# =================================================
+# ID에 해당하는 카메라 객체 자체를 가져옵니다.
+# =================================================
+def get_camera_by_id(id):
+    return _instances.get(id)
+
+
+# =================================================
+# 해당 카메라 ID의 위도/경도 위치 좌표를 반환합니다.
+# =================================================
+def get_camera_coordinate(id):
+    return _camera_coordinates.get(id)
