@@ -19,6 +19,7 @@
   window.dashboardInitialData = dashboardInitialData;
 </script>
 <script src="{{ url_for('main.static', filename='js/dashboard_map.js') }}"></script>
+<script src="{{ url_for('event_log.static', filename='js/logger_alarm.js') }}"></script>
 <script>
   (function () {
     const refreshUrl = "{{ url_for('main.dashboard_refresh') }}";

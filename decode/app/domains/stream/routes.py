@@ -67,7 +67,7 @@ def camera():
         return redirect(url_for("stream.camera"))
 
     active_cameras = []
-    for cid in camera_manager.get_all_camera_ids():
+    for cid in camera_manager.get_all_camera_ids(on_activated=False):
         cam_obj = camera_manager.get_camera_by_id(cid)
         if cam_obj:
             active_cameras.append(

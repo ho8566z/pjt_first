@@ -12,6 +12,8 @@ USER_LOGS_FILE = os.path.join(BASE_DIR, "jsons", "user_logs.json")
 TARGETS_PROFILES_FILE = os.path.join(BASE_DIR, "jsons", "target_profiles.json")
 MAPS_FILE = os.path.join(BASE_DIR, "jsons", "maps.json")
 
+CAMERAS_FILES = os.path.join(BASE_DIR, "jsons", "cameras.json")
+
 
 def load_json(file):
     try:

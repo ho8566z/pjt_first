@@ -9,13 +9,9 @@ from app.utils.member_filter import filter_keyword
 from app.utils.member_sort import sort_accounts
 from app.utils.pagination import paginate
 from app.domains.stream.face_profiler import add_or_update_face
+from app.domains.stream.face_profiler import init_load_all_embeddings
 
 
-# =================================================
-# 신규 프로필 등록: 입력받은 아이디(pid)가 기존 JSON 
-# 데이터에 없으면 이름, 나이, 설명 등의 프로필 정보와 
-# 업로드된 프로필 이미지를 저장하고 타임스탬프를 부여합니다.
-# =================================================
 def handle_add_profile(form_data, files, static_folder):
     profiles = load_json(TARGETS_PROFILES_FILE)
     pid = form_data.get("id")
@@ -31,7 +27,7 @@ def handle_add_profile(form_data, files, static_folder):
     file = files.get("profile_img")
     upload_path = os.path.join(static_folder, "uploaded_profiles")
     os.makedirs(upload_path, exist_ok=True)
-    file_name = secure_filename(f"{pid}")
+    file_name = secure_filename(f"{pid}.png")
     file.save(os.path.join(upload_path, file_name))
 
     time_formatted = get_current_time_stamp_formated()
@@ -49,11 +45,6 @@ def handle_add_profile(form_data, files, static_folder):
     return True
 
 
-# =================================================
-# 프로필 정보 수정: 기존 대상의 프로필 정보(이름, 나이, 
-# 상세 설명 등) 및 수정 일시(MOD_DATE)를 갱신하며, 새로운 
-# 프로필 이미지가 첨부된 경우 이미지 파일도 교체합니다.
-# =================================================
 def handle_update_profile(form_data, files, static_folder):
     profiles = load_json(TARGETS_PROFILES_FILE)
     pid = form_data.get("id")
@@ -68,19 +59,13 @@ def handle_update_profile(form_data, files, static_folder):
         if file and file.filename != "":
             upload_path = os.path.join(static_folder, "uploaded_profiles")
             os.makedirs(upload_path, exist_ok=True)
-            file_name = secure_filename(f"{pid}")
+            file_name = secure_filename(f"{pid}.png")
             profiles[pid]["IMAGE"] = file_name
             file.save(os.path.join(upload_path, file_name))
 
         save_json(TARGETS_PROFILES_FILE, profiles)
 
 
-# =================================================
-# 얼굴 데이터 학습/추가: 업로드된 이미지 파일을 메모리 상에서 
-# OpenCV 이미지 형태로 디코딩하여, face_profiler 모듈의 
-# add_or_update_face() 함수로 전달해 해당 인물의 얼굴 
-# 특징점(임베딩)을 생성/업데이트합니다.
-# =================================================
 def handle_face_encode(form_data, files):
     pid = form_data.get("id")
     face_file = files.get("face_img")
@@ -90,11 +75,6 @@ def handle_face_encode(form_data, files):
         add_or_update_face(pid, img)
 
 
-# =================================================
-# 프로필 및 관련 데이터 삭제: JSON 파일에서 대상의 프로필 
-# 데이터를 제거하고, 이와 연결된 얼굴 임베딩 데이터 파일(.npz) 
-# 및 업로드된 프로필 이미지 파일까지 깔끔하게 삭제합니다.
-# =================================================
 def handle_delete_profile(form_data, static_folder):
     profiles = load_json(TARGETS_PROFILES_FILE)
     pid = form_data.get("id")
@@ -102,19 +82,14 @@ def handle_delete_profile(form_data, static_folder):
         del profiles[pid]
     save_json(TARGETS_PROFILES_FILE, profiles)
 
-    file_path = os.path.join(BASE_DIR, "face_embeddings", pid)
+    file_path = os.path.join(BASE_DIR, "face_embeddings", f"{pid}.npz")
     if os.path.exists(file_path):
         os.remove(file_path)
 
-    os.remove(os.path.join(static_folder, "uploaded_profiles", pid))
+    os.remove(os.path.join(static_folder, "uploaded_profiles", f"{pid}.png"))
+    init_load_all_embeddings()
 
 
-# =================================================
-# 프로필 목록 검색 및 페이지네이션: 저장된 모든 프로필 목록을 
-# 불러온 뒤 검색 키워드/태그 필터링, 정렬 기준 적용, 그리고 
-# 요청된 페이지 단위(per_page, page)로 잘라내어 대시보드 
-# 목록 뷰에 필요한 데이터를 반환합니다.
-# =================================================
 def get_paginated_profiles(args):
     profiles_list = list(load_json(TARGETS_PROFILES_FILE).values())
 

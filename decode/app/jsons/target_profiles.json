@@ -3,20 +3,10 @@
     "ID": "faul001",
     "NAME": "폴 피닉스",
     "AGE": "40",
-    "SHORT_DESCRIPTION": "폭행",
-    "DESCRIPTION": "묻지마 폭행",
-    "IMAGE": "faul001",
-    "REG_DATE": "2026/07/14, 00:14:30",
-    "MOD_DATE": "2026/07/14, 00:14:47"
-  },
-  "jungho001": {
-    "ID": "jungho001",
-    "NAME": "박정호",
-    "AGE": "27",
-    "SHORT_DESCRIPTION": "풍기문란",
-    "DESCRIPTION": "노상방뇨, 바바리맨",
-    "IMAGE": "jungho001",
-    "REG_DATE": "2026/07/14, 01:03:16",
-    "MOD_DATE": "2026/07/15, 14:46:05"
+    "SHORT_DESCRIPTION": "폭력",
+    "DESCRIPTION": "무차별 폭행",
+    "IMAGE": "faul001.png",
+    "REG_DATE": "2026/07/22, 10:33:20",
+    "MOD_DATE": "2026/07/22, 10:33:20"
   }
 }
